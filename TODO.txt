@@ -1,0 +1,4 @@
+- Message specific component of entity.
+- Add bounding boxes.
+- Fix jump.
+- Basic chunk.

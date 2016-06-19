@@ -1,0 +1,3 @@
+-Ideps/glfw/include
+-Ideps/glm
+-Ideps/SOIL/src
