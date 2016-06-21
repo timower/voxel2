@@ -10,7 +10,7 @@
 
 IDEA:
 
-```
+```cpp
 // systemData.cpp:
 void initSystemData(data) {
 	initSystem1();
