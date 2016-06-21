@@ -2,6 +2,7 @@
 #include "game.cpp"
 #include "resources.cpp"
 #include "transform.cpp"
+#include "systems/systemData.cpp"
 #include "systems/entitySystem.cpp"
 #include "systems/transformSystem.cpp"
 #include "systems/graphicsSystem.cpp"

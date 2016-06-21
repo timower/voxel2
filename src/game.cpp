@@ -6,7 +6,8 @@
 #include "message.h"
 
 
-void initGame(GameData& gameData) {
+// TODO: move to seperate file:
+void loadScene(GameData& gameData) {
 	SystemData& systemData = gameData.systemData;
 
 	Handle camHandle = createEntity(systemData.entityData);
@@ -14,20 +15,13 @@ void initGame(GameData& gameData) {
 	addCameraComponent(systemData, camHandle);
 	addTransformComponent(systemData, camHandle);
 	addPhysComponent(systemData, camHandle);
-	initInputSystem(gameData, camHandle);
-	//initInputSystem(gameData, camHandle);
-
+	setControlEntity(gameData.systemData, camHandle);
 
 	Transform camTrans;
 	camTrans.position = glm::vec3(0.0f, 5.0f, -5.0f);
 	camTrans.yaw = camTrans.roll = camTrans.pitch = 0;
 	camTrans.scale = glm::vec3(1.0f);
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
-
-	//addPhysComponent(systemData.physicsData, systemData.entityData, camHndl);
-
-
-	initGraphicsSystem(systemData.graphicsData);
 
 	Handle cube = createCube(systemData, 1.0f);
 	addTransformComponent(systemData, cube);
@@ -50,25 +44,25 @@ void initGame(GameData& gameData) {
 	sendMessage(systemData, cube3, SET_TRANSFORM, &trans);
 }
 
-void updateGame(GameData& gameData, UpdateInfo& updateInfo) {
-	SystemData& systemData = gameData.systemData;
+void initGame(GameData& data) {
+	initSystemData(data);
+	loadScene(data);
+}
 
+void updateGame(GameData& data, UpdateInfo& update) {
 #ifndef NDEBUG
 	static float lastTime = 0.0f;
 	static size_t lastFrame = 0;
-	if (updateInfo.t - lastTime >= 1.0f) {
-		size_t nframes = updateInfo.frame - lastFrame;
-		printf("%f ms/frame\n", 1000.0f / (float)nframes);
-		lastFrame = updateInfo.frame;
-		lastTime = updateInfo.t;
+	static char titleBuffer[512];
+	if (update.t - lastTime >= 1.0f) {
+		size_t nframes = update.frame - lastFrame;
+		//printf("%f ms/frame\n", 1000.0f / (float)nframes);
+		sprintf(titleBuffer, "%f ms/frame", 1000.0f / (float)nframes);
+		glfwSetWindowTitle(data.window, titleBuffer);
+		lastFrame = update.frame;
+		lastTime = update.t;
 	}
 #endif
 
-	updateInputSystem(gameData);
-
-	updatePhysicsSystem(systemData, updateInfo.dt);
-
-	updateTransformSystem(systemData);
-
-	updateGraphicsSystem(systemData.graphicsData);
+	updateSystemData(data, update);
 }

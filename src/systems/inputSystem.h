@@ -11,11 +11,12 @@ struct SystemData;
 
 struct InputData {
 	double lastX, lastY;
-	
+
 	Handle controlEntity;
 };
 
-void initInputSystem(GameData& gameData, Handle controlEntity);
+void initInputSystem(GameData& gameData);
+void setControlEntity(SystemData& systemData,  Handle controlEntity);
 
 void updateInputSystem(GameData& gameData);
 

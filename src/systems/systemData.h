@@ -1,13 +1,15 @@
 #ifndef SYSTEM_DATA_H
 #define SYSTEM_DATA_H
 
-struct SystemData;
-
 #include "entitySystem.h"
 #include "transformSystem.h"
 #include "graphicsSystem.h"
 #include "physicsSystem.h"
 #include "inputSystem.h"
+
+// from game.h:
+struct GameData;
+struct UpdateInfo;
 
 enum SystemTypes {
 	ENTITY = 0,
@@ -24,5 +26,8 @@ struct SystemData {
 	PhysicsData physicsData;
 	InputData inputData;
 };
+
+void initSystemData(GameData& data);
+void updateSystemData(GameData& data, UpdateInfo& update);
 
 #endif

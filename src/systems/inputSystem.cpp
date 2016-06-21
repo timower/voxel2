@@ -8,15 +8,18 @@
 #define SPEED 1.5f
 #define JUMP_SPEED 5.0f
 
-void initInputSystem(GameData& gameData, Handle controlEntity) {
+void initInputSystem(GameData& gameData) {
 	SystemData& systemData = gameData.systemData;
-	systemData.inputData.controlEntity = controlEntity;
-	addComponent(systemData.entityData, controlEntity, {0, SystemTypes::INPUT, 0});
 
 	double xpos, ypos;
 	glfwGetCursorPos(gameData.window, &xpos, &ypos);
 	systemData.inputData.lastX = xpos;
 	systemData.inputData.lastY = ypos;
+}
+
+void setControlEntity(SystemData& systemData, Handle controlEntity) {
+	systemData.inputData.controlEntity = controlEntity;
+	addComponent(systemData.entityData, controlEntity, {0, SystemTypes::INPUT, 0});
 }
 
 void updateInputSystem(GameData& gameData) {

@@ -26,4 +26,7 @@ Handle createEntity(EntityData& entityData);
 Entity& getEntity(EntityData& entityData, Handle entity);
 void addComponent(EntityData& entityData, Handle entityHndl, Handle component);
 
+struct SystemData;
+void sendEntityMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg);
+
 #endif

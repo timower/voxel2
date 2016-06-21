@@ -2,6 +2,8 @@
 #include "systemData.h"
 #include <cassert>
 
+#include "../message.h"
+
 Handle createEntity(EntityData& entityData) {
 	assert(entityData.nEntities < MAX_ENTITIES);
 	uint16_t idx = entityData.nEntities++;
@@ -19,4 +21,12 @@ void addComponent(EntityData& entityData, Handle entityHndl, Handle component) {
 	Entity& entity = getEntity(entityData, entityHndl);
 	assert(entity.nComponents < MAX_COMPONENTS);
 	entity.components[entity.nComponents++] = component;
+}
+
+
+void sendEntityMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
+	Entity& entity = getEntity(systemData.entityData, receiver);
+	for (uint16_t i = 0; i < entity.nComponents; i++) {
+		sendMessage(systemData, entity.components[i], type, arg);
+	}
 }

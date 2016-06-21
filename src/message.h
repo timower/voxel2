@@ -20,7 +20,7 @@ typedef void(*MessageHandler)(SystemData&, Handle, uint32_t, void*);
 void sendMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg);
 
 MessageHandler messageHandlers[] = {
-	sendMessage,
+	sendEntityMessage,
 	sendTransformMessage,
 	sendGraphicsMessage,
 	sendPhysicsMessage,
