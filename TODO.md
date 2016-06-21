@@ -10,7 +10,7 @@
 
 IDEA:
 
-´´´
+```
 // systemData.cpp:
 void initSystemData(data) {
 	initSystem1();
@@ -33,4 +33,4 @@ void update(data, update) {
 void sendMessage(data, Handle receiver, MessageType type, void* msg) {
     messageHandles[type.system](data, receiver, type, msg);
 }
-´´´
+```
