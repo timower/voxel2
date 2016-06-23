@@ -11,14 +11,6 @@
 struct GameData;
 struct UpdateInfo;
 
-enum SystemTypes {
-	ENTITY = 0,
-	TRANSFORM,
-	GRAPHICS,
-	PHYSICS,
-	INPUT
-};
-
 struct SystemData {
 	EntityData entityData;
 	TransformData transformData;

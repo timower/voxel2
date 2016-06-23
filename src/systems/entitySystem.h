@@ -3,28 +3,30 @@
 
 #include <cstdint>
 
+#include "systemTypes.h"
+
+#include "../container.h"
+#include "../handle.h"
+
 #define MAX_COMPONENTS 6
 #define MAX_ENTITIES 128
 
-struct Handle {
-	uint32_t index : 16;
-	uint32_t type : 6;
-	uint32_t generation : 10;
-};
-
 struct Entity {
+	Handle handle;
+
 	uint8_t nComponents;
 	Handle components[MAX_COMPONENTS];
 };
 
 struct EntityData {
-	uint16_t nEntities;
-	Entity entities[MAX_ENTITIES];
+	Container<Entity, MAX_ENTITIES, SystemTypes::ENTITY> entities;
 };
 
 Handle createEntity(EntityData& entityData);
 Entity& getEntity(EntityData& entityData, Handle entity);
 void addComponent(EntityData& entityData, Handle entityHndl, Handle component);
+
+void initEntitySystem(EntityData& entityData);
 
 struct SystemData;
 void sendEntityMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg);

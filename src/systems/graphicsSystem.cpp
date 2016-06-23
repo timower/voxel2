@@ -5,26 +5,18 @@
 #include "../message.h"
 
 Handle addDrawComponent(SystemData& systemData, Handle entityHndl) {
-	assert(systemData.graphicsData.nDrawables < MAX_DRAWABLES);
-
-	uint16_t idx = systemData.graphicsData.nDrawables++;
-	systemData.graphicsData.drawables[idx] = {.entity = entityHndl};
-	idx += 1;
-
-	Handle ret = {idx, SystemTypes::GRAPHICS, 0};
+	Handle ret = systemData.graphicsData.drawables.add();
+	getGraphicsComponent(systemData.graphicsData, ret).entity = entityHndl;
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
 }
 
 GraphicsComponent& getGraphicsComponent(GraphicsData& graphicsData, Handle component) {
-	assert(component.type == SystemTypes::GRAPHICS);
-	auto index = component.index - 1;
-	assert(index < graphicsData.nDrawables);
-	return graphicsData.drawables[index];
+	return graphicsData.drawables.get(component);
 }
 
 Handle addCameraComponent(SystemData& systemData, Handle entityHndl) {
-	Handle ret = {0, SystemTypes::GRAPHICS, 0};
+	Handle ret = {0, SystemTypes::CAMERA, 0};
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
 }
@@ -36,19 +28,18 @@ void initGraphicsSystem(GraphicsData& graphicsData) {
 		0.01f,
 		100.0f
 	);
+	graphicsData.drawables.init();
 }
 
 void updateGraphicsSystem(GraphicsData& gData) {
 	glClearColor(0.2, 0.5, 0.8, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// TODO: fix camera & view
 	glm::mat4 pv = gData.projectionMatrix * gData.viewMatrix;
-	//glm::mat4 pv = gData.projectionMatrix * transformToView(gData.cameraTransform);
 
-	size_t nDrawables = gData.nDrawables;
+	size_t nDrawables = gData.drawables.size;
 	for (size_t i = 0; i < nDrawables; ++i) {
-		const GraphicsComponent& drawable = gData.drawables[i];
+		const GraphicsComponent& drawable = gData.drawables.data[i];
 
 		glBindTexture(GL_TEXTURE_2D, drawable.TEX);
 
@@ -69,7 +60,7 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 	switch (type) {
 		case SET_GRAPH_TRANS: {
 			Transform* transform = static_cast<Transform*>(arg);
-			if (receiver.index == 0)
+			if (receiver.type == SystemTypes::CAMERA)
 				systemData.graphicsData.viewMatrix = transformToView(*transform);
 			else
 				getGraphicsComponent(systemData.graphicsData, receiver).modelMat = transformToModel(*transform);

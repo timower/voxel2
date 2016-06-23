@@ -3,14 +3,17 @@
 
 #include <cstdarg>
 
+#include <glm/glm.hpp>
+
 #include "entitySystem.h"
-#include "../transform.h"
+#include "../container.h"
 
 struct SystemData;
 
 #define MAX_PHYS_COMP 128
 
 struct PhysicsComponent {
+	Handle handle;
 	Handle entity;
 
 	glm::vec3 velocity;
@@ -18,8 +21,7 @@ struct PhysicsComponent {
 };
 
 struct PhysicsData {
-	PhysicsComponent components[MAX_PHYS_COMP];
-	size_t nComponents;
+	Container<PhysicsComponent, MAX_PHYS_COMP, SystemTypes::PHYSICS> components;
 };
 
 Handle addPhysComponent(SystemData& systemData, Handle entityHndl);

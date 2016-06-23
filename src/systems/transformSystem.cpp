@@ -3,27 +3,28 @@
 #include "systemData.h"
 #include "../message.h"
 
+TransformComponent& getTransformComponent(TransformData& transformData, Handle component) {
+	return transformData.components.get(component);
+}
+
 Handle addTransformComponent(SystemData& systemData, Handle entityHndl) {
-	assert(systemData.transformData.nComponents < MAX_ENTITIES);
+	Handle ret = systemData.transformData.components.add();
 
-	uint16_t idx = systemData.transformData.nComponents++;
-	systemData.transformData.components[idx] = {.entity = entityHndl, .dirty = true};
-
-	Handle ret = {idx, SystemTypes::TRANSFORM, 0};
+	getTransformComponent(systemData.transformData, ret).entity = entityHndl;
 	addComponent(systemData.entityData, entityHndl, ret);
+
 	return ret;
 }
 
-TransformComponent& getTransformComponent(TransformData& transformData, Handle component) {
-	assert(component.type == SystemTypes::TRANSFORM);
-	assert(component.index < transformData.nComponents);
-	return transformData.components[component.index];
+
+void initTransformSystem(TransformData& transformData) {
+	transformData.components.init();
 }
 
 void updateTransformSystem(SystemData& systemData) {
-	uint16_t n = systemData.transformData.nComponents;
-	for (uint16_t i = 0; i < n; i++) {
-		TransformComponent& comp = systemData.transformData.components[i];
+	size_t n = systemData.transformData.components.size;
+	for (size_t i = 0; i < n; i++) {
+		TransformComponent& comp = systemData.transformData.components.data[i];
 
 		if (comp.dirty) {
 			comp.dirty = false;

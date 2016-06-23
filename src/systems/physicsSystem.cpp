@@ -4,30 +4,25 @@
 #define GRAV_A 9.81f
 
 Handle addPhysComponent(SystemData& systemData, Handle entityHndl) {
-	assert(systemData.physicsData.nComponents < MAX_PHYS_COMP);
-
-	uint16_t idx = systemData.physicsData.nComponents++;
-	systemData.physicsData.components[idx] = {.entity = entityHndl};
-
-	Handle ret = {idx, SystemTypes::PHYSICS, 0};
+	Handle ret = systemData.physicsData.components.add();
+	getPhysComponent(systemData.physicsData, ret).entity = entityHndl;
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
 }
 
 PhysicsComponent& getPhysComponent(PhysicsData& pData, Handle component) {
-	assert(component.type == SystemTypes::PHYSICS);
-	assert(component.index < pData.nComponents);
-	return pData.components[component.index];
+	return pData.components.get(component);
 }
 
 void initPhysicsSystem(PhysicsData& physicsData) {
-
+	physicsData.components.init();
 }
 
 void updatePhysicsSystem(SystemData& systemData, float dt) {
-	size_t nComp = systemData.physicsData.nComponents;
+	size_t nComp = systemData.physicsData.components.size;
 	for (size_t i = 0; i < nComp; i++) {
-		PhysicsComponent& comp = systemData.physicsData.components[i];
+		PhysicsComponent& comp = systemData.physicsData.components.data[i];
+
 		glm::vec3 velocity = comp.velocity + comp.physVel;
 
 		Transform transform;

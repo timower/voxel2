@@ -4,8 +4,14 @@
 
 
 void initSystemData(GameData& data) {
+	initEntitySystem(data.systemData.entityData);
+
+	initTransformSystem(data.systemData.transformData);
+
 	initGraphicsSystem(data.systemData.graphicsData);
+
 	initInputSystem(data);
+
 	initPhysicsSystem(data.systemData.physicsData);
 }
 

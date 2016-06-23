@@ -13,6 +13,7 @@ struct SystemData;
 #define MAX_DRAWABLES 128
 
 struct GraphicsComponent {
+	Handle handle;
 	Handle entity;
 
 	glm::mat4 modelMat;
@@ -28,13 +29,12 @@ struct GraphicsComponent {
 };
 
 struct GraphicsData {
-	//Handle cameraEntity;
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
-	//Transform cameraTransform;
 
-	GraphicsComponent drawables[MAX_DRAWABLES];
-	uint16_t nDrawables;
+	//GraphicsComponent drawables[MAX_DRAWABLES];
+	//uint16_t nDrawables;
+	Container<GraphicsComponent, MAX_DRAWABLES, SystemTypes::GRAPHICS> drawables;
 };
 
 
