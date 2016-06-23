@@ -65,5 +65,8 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 			else
 				getGraphicsComponent(systemData.graphicsData, receiver).modelMat = transformToModel(*transform);
 		} break;
+		case DESTROY: {
+			systemData.graphicsData.drawables.remove(receiver);
+		} break;
 	}
 }

@@ -7,7 +7,9 @@ enum SystemTypes {
 	GRAPHICS,
 	CAMERA,
 	PHYSICS,
-	INPUT
+	INPUT,
+
+	INVALID
 };
 
 #endif

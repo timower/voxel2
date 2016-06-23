@@ -34,7 +34,8 @@ void updateInputSystem(GameData& gameData) {
 	inputData.lastY = yPos;
 
 	Transform controlTrans;
-	sendMessage(gameData.systemData, inputData.controlEntity, GET_TRANSFORM, &controlTrans);
+	//sendMessage(gameData.systemData, inputData.controlEntity, GET_TRANSFORM, &controlTrans);
+	sendEntitySysMsg(gameData.systemData, inputData.controlEntity, SystemTypes::TRANSFORM, GET_TRANSFORM, &controlTrans);
 
 	controlTrans.yaw += dx * 0.005f; // TODO: config
 	controlTrans.pitch -= dy * 0.005f;
@@ -58,7 +59,8 @@ void updateInputSystem(GameData& gameData) {
 	if (glm::dot(velocity, velocity) != 0)
 		velocity = glm::normalize(velocity) * SPEED;
 
-	sendMessage(gameData.systemData, inputData.controlEntity, SET_TRANSFORM, &controlTrans); // TODO: remove, only needed for angles.
+	//sendMessage(gameData.systemData, inputData.controlEntity, SET_TRANSFORM, &controlTrans); // TODO: remove, only needed for angles.
+	sendEntitySysMsg(gameData.systemData, inputData.controlEntity, SystemTypes::TRANSFORM, SET_TRANSFORM, &controlTrans);
 	sendMessage(gameData.systemData, inputData.controlEntity, SET_VELOCITY, &velocity);
 }
 

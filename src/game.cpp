@@ -5,6 +5,7 @@
 #include "entityFactory.h"
 #include "message.h"
 
+static Handle cube3;
 
 // TODO: move to seperate file:
 void loadScene(GameData& gameData) {
@@ -38,7 +39,7 @@ void loadScene(GameData& gameData) {
 	trans.position = glm::vec3(-2.0f, 5.0f, 1.0f);
 	sendMessage(systemData, cube2, SET_TRANSFORM, &trans);
 
-	Handle cube3 = createCube(systemData, 1.0f);
+	cube3 = createCube(systemData, 1.0f);
 	addTransformComponent(systemData, cube3);
 	trans.position = glm::vec3(-2.0f, 0.0f, 1.0f);
 	sendMessage(systemData, cube3, SET_TRANSFORM, &trans);
@@ -64,5 +65,24 @@ void updateGame(GameData& data, UpdateInfo& update) {
 	}
 #endif
 
+	static float lastC = 0.0f;
+	if (update.t - lastC >= .1f) {
+		if (cube3.index) {
+			sendMessage(data.systemData, cube3, DESTROY, nullptr);
+			cube3.index = false;
+		} else {
+			cube3 = createCube(data.systemData, 1.0f);
+			addTransformComponent(data.systemData, cube3);
+
+			Transform trans;
+			trans.scale = glm::vec3(1.0f);
+			trans.yaw = trans.roll = trans.pitch = 0;
+			trans.position = glm::vec3(-2.0f, 0.0f, 1.0f);
+
+			sendMessage(data.systemData, cube3, SET_TRANSFORM, &trans);
+		}
+		lastC = update.t;
+	}
+	
 	updateSystemData(data, update);
 }

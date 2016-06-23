@@ -1,12 +1,8 @@
-- Make systems a class.
-- Fix physics.
-- Fix jump.
-- Add extra indirection, allow entities to be removed.
-
-- Store components per system in entity.
-- Message specific component of entity.
+- fix entity factory.
 
 - Basic chunk.
+
+- sub entities via entity component zero in entity or remove component zero?
 
 IDEA:
 

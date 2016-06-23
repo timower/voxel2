@@ -29,6 +29,8 @@ void updateTransformSystem(SystemData& systemData) {
 		if (comp.dirty) {
 			comp.dirty = false;
 			sendMessage(systemData, comp.entity, SET_GRAPH_TRANS, &comp.transform);
+			//sendEntitySysMsg(systemData, comp.entity, SystemTypes::GRAPHICS, SET_GRAPH_TRANS, &comp.transform);
+			//sendEntitySysMsg(systemData, comp.entity, SystemTypes::CAMERA, SET_GRAPH_TRANS, &comp.transform);
 		}
 	}
 }
@@ -44,6 +46,9 @@ void sendTransformMessage(SystemData& systemData, Handle receiver, uint32_t type
 		case GET_TRANSFORM: {
 			Transform* trans = static_cast<Transform*>(arg);
 			*trans = getTransformComponent(systemData.transformData, receiver).transform;
+		} break;
+		case DESTROY: {
+			systemData.transformData.components.remove(receiver);
 		} break;
 	}
 }

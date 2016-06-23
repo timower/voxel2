@@ -7,7 +7,7 @@
 
 enum MessageType {
 	// entity:
-	REMOVE_COMP = 1,
+	DESTROY = 1,
 	// graphics
 	SET_GRAPH_TRANS,	// <Transform*> 	sets the graphics matrix,
 	// transform

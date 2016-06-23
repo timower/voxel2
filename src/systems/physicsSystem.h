@@ -25,7 +25,6 @@ struct PhysicsData {
 };
 
 Handle addPhysComponent(SystemData& systemData, Handle entityHndl);
-PhysicsComponent& getPhysComponent(PhysicsData& pData, Handle component);
 
 void initPhysicsSystem(PhysicsData& physicsData);
 

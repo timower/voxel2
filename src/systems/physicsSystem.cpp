@@ -3,15 +3,15 @@
 
 #define GRAV_A 9.81f
 
+PhysicsComponent& getPhysComponent(PhysicsData& pData, Handle component) {
+	return pData.components.get(component);
+}
+
 Handle addPhysComponent(SystemData& systemData, Handle entityHndl) {
 	Handle ret = systemData.physicsData.components.add();
 	getPhysComponent(systemData.physicsData, ret).entity = entityHndl;
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
-}
-
-PhysicsComponent& getPhysComponent(PhysicsData& pData, Handle component) {
-	return pData.components.get(component);
 }
 
 void initPhysicsSystem(PhysicsData& physicsData) {
@@ -37,7 +37,8 @@ void updatePhysicsSystem(SystemData& systemData, float dt) {
 		}
 		transform.position = newPosition;
 
-		sendMessage(systemData, comp.entity, SET_TRANSFORM, &transform);
+		//sendMessage(systemData, comp.entity, SET_TRANSFORM, &transform);
+		sendEntitySysMsg(systemData, comp.entity, SystemTypes::TRANSFORM, SET_TRANSFORM, &transform);
 	}
 }
 
@@ -46,6 +47,9 @@ void sendPhysicsMessage(SystemData& systemData, Handle receiver, uint32_t type, 
 		case SET_VELOCITY: {
 			glm::vec3* velocity = static_cast<glm::vec3*>(arg);
 			getPhysComponent(systemData.physicsData, receiver).velocity = *velocity;
+		} break;
+		case DESTROY:  {
+			systemData.physicsData.components.remove(receiver);
 		} break;
 	}
 }
