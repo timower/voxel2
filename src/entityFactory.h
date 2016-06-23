@@ -5,6 +5,6 @@
 #include "systems/entitySystem.h"
 #include "game.h"
 
-Handle createCube(SystemData& systemData, GLfloat size);
+Handle createCube(SystemData& systemData);
 
 #endif

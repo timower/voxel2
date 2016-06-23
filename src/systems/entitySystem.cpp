@@ -19,6 +19,7 @@ void addComponent(EntityData& entityData, Handle entityHndl, Handle component) {
 	Entity& entity = getEntity(entityData, entityHndl);
 	//assert(entity.nComponents < MAX_COMPONENTS);
 	assert(component.type < MAX_COMPONENTS);
+	assert(entity.components[component.type].type == INVALID);
 	entity.components[component.type] = component;
 }
 

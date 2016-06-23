@@ -1,5 +1,6 @@
 #include "entityFactory.h"
 #include "resources.h"
+#include "message.h"
 
 GLuint indices[] = {
 	// top
@@ -22,87 +23,95 @@ GLuint indices[] = {
 	22, 21, 23,
 };
 
+GLfloat vertices[] = {
+	//top
+	0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f, 1.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f,
+	//bottom
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f,
+	1.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 0.0f, 1.0f,
+	1.0f, 1.0f,
+	//right
+	0.0f, 0.0f, 0.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f, 1.0f,
+	0.0f, 0.0f,
+	//left
+	1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f,
+	1.0f, 1.0f, 1.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f,
+	1.0f, 0.0f, 1.0f,
+	0.0f, 0.0f,
+	//front
+	0.0f, 0.0f, 1.0f,
+	0.0f, 0.0f,
+	0.0f, 1.0f, 1.0f,
+	0.0f, 1.0f,
+	1.0f, 0.0f, 1.0f,
+	1.0f, 0.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f,
+	//back
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f,
+};
+
 static GLuint cubeIBO = 0;
+static GLuint cubeVBO = 0;
 
 // TODO: scale & use shared VBO
-Handle createCube(SystemData& systemData, GLfloat size) {
+Handle createCube(SystemData& systemData) {
 	Handle entity = createEntity(systemData.entityData);
+	addTransformComponent(systemData, entity);
+
 	Handle drawHndl = addDrawComponent(systemData, entity);
 	GraphicsComponent& drawComp = getGraphicsComponent(systemData.graphicsData, drawHndl);
-	GLfloat vertices[] = {
-		//top
-		0.0f, size, 0.0f,
-		0.0f, 0.0f,
-		size, size, 0.0f,
-		1.0f, 0.0f,
-		0.0f, size, size,
-		0.0f, 1.0f,
-		size, size, size,
-		1.0f, 1.0f,
-		//bottom
-		0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f,
-		0.0f, 0.0f, size,
-		1.0f, 0.0f,
-		size, 0.0f, 0.0f,
-		0.0f, 1.0f,
-		size, 0.0f, size,
-		1.0f, 1.0f,
-		//right
-		0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, size, 0.0f,
-		1.0f, 1.0f,
-		0.0f, size, size,
-		0.0f, 1.0f,
-		0.0f, 0.0f, size,
-		0.0f, 0.0f,
-		//left
-		size, 0.0f, 0.0f,
-		1.0f, 0.0f,
-		size, size, size,
-		0.0f, 1.0f,
-		size, size, 0.0f,
-		1.0f, 1.0f,
-		size, 0.0f, size,
-		0.0f, 0.0f,
-		//front
-		0.0f, 0.0f, size,
-		0.0f, 0.0f,
-		0.0f, size, size,
-		0.0f, 1.0f,
-		size, 0.0f, size,
-		1.0f, 0.0f,
-		size, size, size,
-		1.0f, 1.0f,
-		//back
-		0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f,
-		size, 0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, size, 0.0f,
-		0.0f, 1.0f,
-		size, size, 0.0f,
-		1.0f, 1.0f,
-	};
+
 	if (!cubeIBO) {
 		glGenBuffers(1, &cubeIBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+	if (!cubeVBO) {
+		glGenBuffers(1, &cubeVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 	glGenVertexArrays(1, &drawComp.VAO);
-	glGenBuffers(1, &drawComp.VBO);
-
 	glBindVertexArray(drawComp.VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, drawComp.VBO);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
+	drawComp.VBO = cubeVBO;
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO);
 	drawComp.IBO = cubeIBO;
@@ -126,5 +135,7 @@ Handle createCube(SystemData& systemData, GLfloat size) {
 	drawComp.nVertices = 36;
 
 	drawComp.program = loadShaderFile("assets/cube.vert", "assets/cube.frag");
+
+	sendMessage(systemData, entity, SET_TRANSFORM, &ZERO);
 	return entity;
 }

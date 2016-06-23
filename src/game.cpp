@@ -24,8 +24,7 @@ void loadScene(GameData& gameData) {
 	camTrans.scale = glm::vec3(1.0f);
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
 
-	Handle cube = createCube(systemData, 1.0f);
-	addTransformComponent(systemData, cube);
+	Handle cube = createCube(systemData);
 	addPhysComponent(systemData, cube);
 	Transform trans;
 	trans.scale = glm::vec3(1.0f);
@@ -34,13 +33,11 @@ void loadScene(GameData& gameData) {
 	sendMessage(systemData, cube, SET_TRANSFORM, &trans);
 
 
-	Handle cube2 = createCube(systemData, 1.0f);
-	addTransformComponent(systemData, cube2);
+	Handle cube2 = createCube(systemData);
 	trans.position = glm::vec3(-2.0f, 5.0f, 1.0f);
 	sendMessage(systemData, cube2, SET_TRANSFORM, &trans);
 
-	cube3 = createCube(systemData, 1.0f);
-	addTransformComponent(systemData, cube3);
+	cube3 = createCube(systemData);
 	trans.position = glm::vec3(-2.0f, 0.0f, 1.0f);
 	sendMessage(systemData, cube3, SET_TRANSFORM, &trans);
 }
@@ -71,8 +68,7 @@ void updateGame(GameData& data, UpdateInfo& update) {
 			sendMessage(data.systemData, cube3, DESTROY, nullptr);
 			cube3.index = false;
 		} else {
-			cube3 = createCube(data.systemData, 1.0f);
-			addTransformComponent(data.systemData, cube3);
+			cube3 = createCube(data.systemData);
 
 			Transform trans;
 			trans.scale = glm::vec3(1.0f);
@@ -83,6 +79,6 @@ void updateGame(GameData& data, UpdateInfo& update) {
 		}
 		lastC = update.t;
 	}
-	
+
 	updateSystemData(data, update);
 }

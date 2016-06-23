@@ -1,7 +1,7 @@
-- fix entity factory.
 
 - Basic chunk.
 
+- Remove component from entity.
 - sub entities via entity component zero in entity or remove component zero?
 
 IDEA:

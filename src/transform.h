@@ -15,6 +15,8 @@ struct Transform {
 	glm::vec3 scale;
 };
 
+static Transform ZERO = {glm::vec3(0), 0.0f, 0.0f, 0.0f, glm::vec3(0)};
+
 glm::mat4 transformToModel(const Transform& transform);
 glm::mat4 transformToView(const Transform& transform);
 
