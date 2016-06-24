@@ -40,6 +40,8 @@ void loadScene(GameData& gameData) {
 	cube3 = createCube(systemData);
 	trans.position = glm::vec3(-2.0f, 0.0f, 1.0f);
 	sendMessage(systemData, cube3, SET_TRANSFORM, &trans);
+
+	createChunk(systemData, glm::ivec3(0, -1, 0));
 }
 
 void initGame(GameData& data) {
@@ -63,7 +65,7 @@ void updateGame(GameData& data, UpdateInfo& update) {
 #endif
 
 	static float lastC = 0.0f;
-	if (update.t - lastC >= .1f) {
+	if (update.t - lastC >= 2.0f) {
 		if (cube3.index) {
 			sendMessage(data.systemData, cube3, DESTROY, nullptr);
 			cube3.index = false;

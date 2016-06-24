@@ -8,5 +8,6 @@
 #include "systems/graphicsSystem.cpp"
 #include "systems/physicsSystem.cpp"
 #include "systems/inputSystem.cpp"
+#include "systems/chunkSystem.cpp"
 #include "entityFactory.cpp"
 #include "message.cpp"

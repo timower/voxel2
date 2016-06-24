@@ -5,7 +5,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-#define SPEED 1.5f
+#define SPEED 5.0f
 #define JUMP_SPEED 5.0f
 
 void initInputSystem(GameData& gameData) {

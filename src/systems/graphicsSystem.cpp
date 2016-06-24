@@ -65,6 +65,14 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 			else
 				getGraphicsComponent(systemData.graphicsData, receiver).modelMat = transformToModel(*transform);
 		} break;
+		case GET_VBO: {
+			GLuint* VBO = static_cast<GLuint*>(arg);
+			*VBO = getGraphicsComponent(systemData.graphicsData, receiver).VBO;
+		} break;
+		case SET_NVERTICES: {
+			size_t* nverts = static_cast<size_t*>(arg);
+			getGraphicsComponent(systemData.graphicsData, receiver).nVertices = *nverts;
+		} break;
 		case DESTROY: {
 			systemData.graphicsData.drawables.remove(receiver);
 		} break;

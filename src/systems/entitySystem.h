@@ -8,7 +8,7 @@
 #include "../container.h"
 #include "../handle.h"
 
-#define MAX_COMPONENTS 6
+#define MAX_COMPONENTS INVALID
 #define MAX_ENTITIES 128
 
 struct Entity {

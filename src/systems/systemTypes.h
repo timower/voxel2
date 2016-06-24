@@ -8,6 +8,7 @@ enum SystemTypes {
 	CAMERA,
 	PHYSICS,
 	INPUT,
+	CHUNK,
 
 	INVALID
 };

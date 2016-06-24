@@ -56,12 +56,14 @@ int main(int argc, char* argv[]) {
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 
+	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
 	// init game:
 	size_t allocatedMemory = MEGABYTES(64);
 	assert(allocatedMemory >= sizeof(GameData));
 	//GameData* gameData = (GameData*)calloc(1, allocatedMemory);
 	GameData* gameData = new (calloc(1, allocatedMemory))GameData;
-	
+
 	if (!gameData) {
 		std::cout << "error allocating memory" << std::endl;
 		glfwTerminate();
