@@ -97,12 +97,12 @@ GLint loadShader(const char* vertSource, const char* fragSource) {
 
 void loadTextureFile(const char* path, GLenum target, int* width, int* height) {
 	int w, h;
-	uint8_t* image = SOIL_load_image(path, &w, &h, 0, SOIL_LOAD_RGB);
+	uint8_t* image = SOIL_load_image(path, &w, &h, 0, SOIL_LOAD_RGBA);
 	if (!image) {
 		printf("error loading texture: %s\n", path);
 		stop();
 	}
-	glTexImage2D(target, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(target, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	SOIL_free_image_data(image);
 	*width = w;
 	*height = h;

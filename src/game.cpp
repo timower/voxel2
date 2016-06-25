@@ -16,6 +16,8 @@ void loadScene(GameData& gameData) {
 	addCameraComponent(systemData, camHandle);
 	addTransformComponent(systemData, camHandle);
 	addPhysComponent(systemData, camHandle);
+	float mass = 0.0f;
+	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_MASS, &mass);
 	setControlEntity(gameData.systemData, camHandle);
 
 	Transform camTrans;
@@ -25,7 +27,7 @@ void loadScene(GameData& gameData) {
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
 
 	Handle cube = createCube(systemData);
-	addPhysComponent(systemData, cube);
+	//addPhysComponent(systemData, cube); // TODO: fix collision!
 	Transform trans;
 	trans.scale = glm::vec3(1.0f);
 	trans.yaw = trans.roll = trans.pitch = 0;
@@ -41,7 +43,8 @@ void loadScene(GameData& gameData) {
 	trans.position = glm::vec3(-2.0f, 0.0f, 1.0f);
 	sendMessage(systemData, cube3, SET_TRANSFORM, &trans);
 
-	createChunk(systemData, glm::ivec3(0, -1, 0));
+	//createChunk(systemData, glm::ivec3(0, -1, 0));
+	setPlayerHandle(systemData.chunkData, camHandle);
 }
 
 void initGame(GameData& data) {

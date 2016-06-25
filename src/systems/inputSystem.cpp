@@ -48,14 +48,16 @@ void updateInputSystem(GameData& gameData) {
 	bool down = glfwGetKey(window, GLFW_KEY_S);
 	bool left = glfwGetKey(window, GLFW_KEY_A);
 	bool right = glfwGetKey(window, GLFW_KEY_D);
-	//bool jump = glfwGetKey(window, GLFW_KEY_SPACE);
+	bool jump = glfwGetKey(window, GLFW_KEY_SPACE);
+	bool drop = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
 
 	float vertical = up * 1.0f + down * -1.0f; // local z
 	float horizontal = left * 1.0f + right * -1.0f; // local x
+	float height = jump * 1.0f + drop * -1.0f;
 
 	glm::vec3 velocity = (vertical * FRONT) + (horizontal * LEFT);
 	velocity = transformRotation(controlTrans) * velocity;
-	velocity.y = 0;
+	velocity.y = height;
 	if (glm::dot(velocity, velocity) != 0)
 		velocity = glm::normalize(velocity) * SPEED;
 

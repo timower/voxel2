@@ -2,6 +2,7 @@
 #define CHUNK_SYSTEM_H
 
 #include <cstdint>
+#include <unordered_map>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -15,20 +16,37 @@
 #define N_VERTICES CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE*4*4 // TODO: make smaller
 #define N_INDICES  CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE*4*4 // TODO: make smaller
 
+#define LOAD_DIST 1
+
 struct Chunk {
 	Handle handle;
 	Handle entity;
+
+	glm::ivec3 pos;
 
 	uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
 	bool dirty;
 };
 
+struct VecHash {
+	size_t operator()(const glm::ivec3 key) const {
+		return key.x * 31 + key.y * 163 + key.z * 317;
+	}
+};
+
 struct ChunkData {
 	Container<Chunk, MAX_CHUNKS, SystemTypes::CHUNK> chunks;
+	std::unordered_map<glm::ivec3, Handle, VecHash> chunkMap; // TODO: custom allocator?
+
+	Handle player;
 
 	// buffer for rebuilding chunk
 	GLuint vertexBuffer[N_VERTICES];
 	size_t vertexIdx;
+
+	// TODO: remove:
+	Handle chunksToRemove[64];
+	size_t nChunksToRemove;
 
 	// shared index buffer.
 	//GLuint indexBuffer[N_INDICES];
@@ -44,6 +62,15 @@ void createChunk(SystemData& systemData, glm::ivec3 chunkPos); // TODO: remove?
 void initChunkSystem(ChunkData& chunkData);
 void updateChunkSystem(SystemData& systemData);
 
+void setPlayerHandle(ChunkData& chunkData, Handle player);
+
 void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg);
+
+inline glm::ivec3 worldToChunk(glm::ivec3 world) {
+	int tmp_x = world.x < 0;
+    int tmp_y = world.y < 0;
+    int tmp_z = world.z < 0;
+    return glm::ivec3((world.x + tmp_x) / 16 -tmp_x, (world.y + tmp_y) / 16 -tmp_y, (world.z + tmp_z) / 16 -tmp_z);
+}
 
 #endif

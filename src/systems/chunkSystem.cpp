@@ -26,15 +26,16 @@ void createChunk(SystemData& systemData, glm::ivec3 chunkPos) {
 
 	// add chunk comp.
 	Handle chunkHndl = addChunkComponent(systemData, entity);
-	// set terrain to full? TODO: later try half & random
+	// set terrain to full?
 	Chunk& chunk = getChunkComponent(systemData.chunkData, chunkHndl);
+	chunk.pos = chunkPos;
 	for (uint16_t x = 0; x < CHUNK_SIZE; x++)
 	for (uint16_t y = 0; y < CHUNK_SIZE; y++)
 	for (uint16_t z = 0; z < CHUNK_SIZE; z++) {
-		if (rand() % 4 == 0)
-			chunk.blocks[x][y][z] = 4;
-		else
-			chunk.blocks[x][y][z] = 0;
+			if (CHUNK_SIZE * chunkPos.y + y < 3.0f)
+				chunk.blocks[x][y][z] = rand() % 10;
+			else
+				chunk.blocks[x][y][z] = 0;
 	}
 	chunk.dirty = true;
 	// add graphics
@@ -68,6 +69,8 @@ void createChunk(SystemData& systemData, glm::ivec3 chunkPos) {
 	trans.pitch = trans.roll = trans.yaw = 0;
 	trans.position = glm::vec3(chunkPos * CHUNK_SIZE);
 	sendMessage(systemData, entity, SET_TRANSFORM, &trans);
+
+	systemData.chunkData.chunkMap[chunkPos] = chunkHndl;
 }
 
 void initChunkSystem(ChunkData& chunkData) {
@@ -91,8 +94,6 @@ void initChunkSystem(ChunkData& chunkData) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexBuffer), &indexBuffer[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-
-
 	// load texture:
 	glGenTextures(1, &chunkData.texture);
 	glBindTexture(GL_TEXTURE_2D, chunkData.texture);
@@ -109,6 +110,9 @@ void initChunkSystem(ChunkData& chunkData) {
 
 	// load shader:
 	chunkData.program = loadShaderFile("assets/chunk.vert", "assets/chunk.frag");
+
+	chunkData.chunkMap.clear();
+	chunkData.nChunksToRemove = 0;
 }
 
 static void addVertex(ChunkData& chunkData, uint8_t x, uint8_t y, uint8_t z, uint8_t matX, uint8_t matY) {
@@ -190,19 +194,56 @@ static void rebuildChunk(SystemData& systemData, const Chunk& chunk) {
 }
 
 void updateChunkSystem(SystemData& systemData) {
+	// load chunks:
+	Transform playerTrans;
+	sendEntitySysMsg(systemData, systemData.chunkData.player, SystemTypes::TRANSFORM, GET_TRANSFORM, &playerTrans);
+	glm::ivec3 playerChunk = worldToChunk(playerTrans.position);
+	for (int x = playerChunk.x - LOAD_DIST; x <= playerChunk.x + LOAD_DIST; x++)
+	for (int y = playerChunk.y - LOAD_DIST; y <= playerChunk.y + LOAD_DIST; y++)
+	for (int z = playerChunk.z - LOAD_DIST; z <= playerChunk.z + LOAD_DIST; z++) {
+		glm::ivec3 cPos = glm::ivec3(x, y, z);
+		if (systemData.chunkData.chunkMap.count(cPos) == 0) {
+			createChunk(systemData, cPos);
+		}
+	}
+
 	// for each chunk: rebuild if dirty.
 	ChunkData& chunkData = systemData.chunkData;
 	size_t nChunks = chunkData.chunks.size;
 	for (size_t i = 0; i < nChunks; i++) {
 		Chunk& chunk = chunkData.chunks.data[i];
-		if (chunk.dirty) {
+
+		int playerDist = glm::max(
+			glm::abs(chunk.pos.x - playerChunk.x),
+			glm::max(
+				glm::abs(chunk.pos.y - playerChunk.y),
+				glm::abs(chunk.pos.z - playerChunk.z)));
+		if (playerDist > LOAD_DIST) {
+			// TODO: use async messages or something?
+			chunkData.chunksToRemove[chunkData.nChunksToRemove++] = chunk.entity;
+		} else if (chunk.dirty) {
 			rebuildChunk(systemData, chunk);
 			chunk.dirty = false;
 		}
 	}
+
+	for (size_t i = 0; i < chunkData.nChunksToRemove; i++) {
+		sendMessage(systemData, chunkData.chunksToRemove[i], DESTROY, nullptr);
+	}
+	chunkData.nChunksToRemove = 0;
 }
 
 
-void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
+void setPlayerHandle(ChunkData& chunkData, Handle player) {
+	chunkData.player = player;
+}
 
+void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
+	switch (type) {
+		case DESTROY: {
+			glm::ivec3 pos = getChunkComponent(systemData.chunkData, receiver).pos;
+			systemData.chunkData.chunkMap.erase(pos);
+			systemData.chunkData.chunks.remove(receiver);
+		} break;
+	}
 }

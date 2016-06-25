@@ -9,7 +9,9 @@ PhysicsComponent& getPhysComponent(PhysicsData& pData, Handle component) {
 
 Handle addPhysComponent(SystemData& systemData, Handle entityHndl) {
 	Handle ret = systemData.physicsData.components.add();
-	getPhysComponent(systemData.physicsData, ret).entity = entityHndl;
+	PhysicsComponent& comp = getPhysComponent(systemData.physicsData, ret);
+	comp.entity = entityHndl;
+	comp.mass = 1.0f;
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
 }
@@ -29,12 +31,12 @@ void updatePhysicsSystem(SystemData& systemData, float dt) {
 		sendMessage(systemData, comp.entity, GET_TRANSFORM, &transform);
 
 		glm::vec3 newPosition = transform.position + velocity * dt;
-		comp.physVel.y -= GRAV_A * dt;
+		comp.physVel.y -=  comp.mass * GRAV_A * dt;
 		// TODO: collision detection.
-		if (newPosition.y <= 0) {
+		/*if (newPosition.y <= 0) {
 			newPosition.y = 0;
 			comp.physVel.y = 0;
-		}
+		}*/
 		transform.position = newPosition;
 
 		//sendMessage(systemData, comp.entity, SET_TRANSFORM, &transform);
@@ -47,6 +49,10 @@ void sendPhysicsMessage(SystemData& systemData, Handle receiver, uint32_t type, 
 		case SET_VELOCITY: {
 			glm::vec3* velocity = static_cast<glm::vec3*>(arg);
 			getPhysComponent(systemData.physicsData, receiver).velocity = *velocity;
+		} break;
+		case SET_MASS: {
+			float* mass = static_cast<float*>(arg);
+			getPhysComponent(systemData.physicsData, receiver).mass = *mass;
 		} break;
 		case DESTROY:  {
 			systemData.physicsData.components.remove(receiver);

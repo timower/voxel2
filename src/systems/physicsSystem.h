@@ -18,6 +18,7 @@ struct PhysicsComponent {
 
 	glm::vec3 velocity;
 	glm::vec3 physVel;
+	float mass;
 };
 
 struct PhysicsData {

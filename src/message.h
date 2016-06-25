@@ -17,6 +17,7 @@ enum MessageType {
 	GET_TRANSFORM,		// <Transform*>		gets the entity's transform.
 	// physics
 	SET_VELOCITY,		// <glm::vec3*> 	sets the velocity.
+	SET_MASS,			// <float*>			sets the mass.
 };
 
 typedef void(*MessageHandler)(SystemData&, Handle, uint32_t, void*);
