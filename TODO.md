@@ -1,7 +1,10 @@
-
-- Basic chunk.
+- collision.
+- Fix physics.
+- Frustum culling.
 
 - Remove component from entity.
+- Chunk without being rendered.
+
 - sub entities via entity component zero in entity or remove component zero?
 
 IDEA:

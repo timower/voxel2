@@ -37,6 +37,16 @@ void updateGraphicsSystem(GraphicsData& gData) {
 
 	glm::mat4 pv = gData.projectionMatrix * gData.viewMatrix;
 
+	// TODO:
+	// foreach (shader):
+	// 	bindShader()
+	// foreach (texture):
+	//  bindTexture()
+	// foreach (VAO):
+	// 	bindVAO()
+	// foreach (ModelMat):
+	//   setUniform()
+	//   draw()
 	size_t nDrawables = gData.drawables.size;
 	for (size_t i = 0; i < nDrawables; ++i) {
 		const GraphicsComponent& drawable = gData.drawables.data[i];
@@ -50,7 +60,6 @@ void updateGraphicsSystem(GraphicsData& gData) {
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(pvm));
 
 		glBindVertexArray(drawable.VAO);
-
 		glDrawElements(GL_TRIANGLES, drawable.nVertices, GL_UNSIGNED_INT, (GLvoid*)0);
 		glBindVertexArray(0);
 	}

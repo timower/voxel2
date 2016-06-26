@@ -64,6 +64,24 @@ void updateInputSystem(GameData& gameData) {
 	//sendMessage(gameData.systemData, inputData.controlEntity, SET_TRANSFORM, &controlTrans); // TODO: remove, only needed for angles.
 	sendEntitySysMsg(gameData.systemData, inputData.controlEntity, SystemTypes::TRANSFORM, SET_TRANSFORM, &controlTrans);
 	sendMessage(gameData.systemData, inputData.controlEntity, SET_VELOCITY, &velocity);
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+		RayInfo rayInfo;
+		rayInfo.origin = controlTrans.position;
+		rayInfo.direction = transformRotation(controlTrans) * FRONT;
+		rayInfo.add = false;
+		rayInfo.val = 0;
+		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
+	}
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		RayInfo rayInfo;
+		rayInfo.origin = controlTrans.position;
+		rayInfo.direction = transformRotation(controlTrans) * FRONT;
+		rayInfo.add = true;
+		rayInfo.val = 3;
+		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
+	}
 }
 
 void sendInputMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {

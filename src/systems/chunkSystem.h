@@ -26,6 +26,8 @@ struct Chunk {
 
 	uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
 	bool dirty;
+
+	Handle neighbours[6];
 };
 
 struct VecHash {
@@ -57,7 +59,7 @@ struct ChunkData {
 
 struct SystemData;
 
-void createChunk(SystemData& systemData, glm::ivec3 chunkPos); // TODO: remove?
+void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos); // TODO: remove?
 
 void initChunkSystem(ChunkData& chunkData);
 void updateChunkSystem(SystemData& systemData);
@@ -66,11 +68,30 @@ void setPlayerHandle(ChunkData& chunkData, Handle player);
 
 void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg);
 
+struct RayInfo {
+	glm::vec3 origin;
+	glm::vec3 direction;
+	bool add;
+	uint8_t val;
+};
+
 inline glm::ivec3 worldToChunk(glm::ivec3 world) {
 	int tmp_x = world.x < 0;
     int tmp_y = world.y < 0;
     int tmp_z = world.z < 0;
-    return glm::ivec3((world.x + tmp_x) / 16 -tmp_x, (world.y + tmp_y) / 16 -tmp_y, (world.z + tmp_z) / 16 -tmp_z);
+    return glm::ivec3(
+		(world.x + tmp_x) / CHUNK_SIZE -tmp_x,
+		(world.y + tmp_y) / CHUNK_SIZE -tmp_y,
+		(world.z + tmp_z) / CHUNK_SIZE -tmp_z
+	);
+}
+
+inline glm::ivec3 worldToBlock(glm::ivec3 world) {
+	return glm::ivec3(
+		(world.x % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+		(world.y % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+		(world.z % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE
+	);
 }
 
 #endif

@@ -21,7 +21,7 @@ void loadScene(GameData& gameData) {
 	setControlEntity(gameData.systemData, camHandle);
 
 	Transform camTrans;
-	camTrans.position = glm::vec3(0.0f, 5.0f, -5.0f);
+	camTrans.position = glm::vec3(2.0f, 5.0f, 2.0f);
 	camTrans.yaw = camTrans.roll = camTrans.pitch = 0;
 	camTrans.scale = glm::vec3(1.0f);
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
@@ -31,12 +31,12 @@ void loadScene(GameData& gameData) {
 	Transform trans;
 	trans.scale = glm::vec3(1.0f);
 	trans.yaw = trans.roll = trans.pitch = 0;
-	trans.position = glm::vec3(1.0f, 3.0f, 0.0f);
+	trans.position = glm::vec3(0.0f, 3.0f, 0.0f);
 	sendMessage(systemData, cube, SET_TRANSFORM, &trans);
 
 
 	Handle cube2 = createCube(systemData);
-	trans.position = glm::vec3(-2.0f, 5.0f, 1.0f);
+	trans.position = glm::vec3(0.0f, 5.0f, 0.0f);
 	sendMessage(systemData, cube2, SET_TRANSFORM, &trans);
 
 	cube3 = createCube(systemData);

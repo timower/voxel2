@@ -67,7 +67,7 @@ T& Container<T, N, S>::get(Handle handle) {
 	assert(handle.type == S);
 	assert(handle.index < N);
 	uint16_t idx = this->handles[handle.index].index;
-	assert(idx < this->size);
+	assert(idx < this->size); // TODO: what if fail???
 	return this->data[idx];
 }
 

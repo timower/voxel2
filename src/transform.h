@@ -7,6 +7,21 @@
 #define UP      glm::vec3(0.0f, 1.0f, 0.0f)
 #define FRONT   glm::vec3(0.0f, 0.0f, 1.0f)
 
+#define NUP    0
+#define NFRONT 1
+#define NLEFT  2
+#define NRIGHT 3
+#define NBACK  4
+#define NDOWN  5
+
+glm::ivec3 normals[] = {
+	{ 0,  1,  0}, // up
+	{ 0,  0,  1}, // front
+	{ 1,  0,  0}, // left
+	{-1,  0,  0}, // right
+	{ 0,  0, -1}, // back
+	{ 0, -1,  0}, // down
+};
 
 struct Transform {
 	// TODO: add AABB?

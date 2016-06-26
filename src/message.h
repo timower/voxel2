@@ -18,6 +18,8 @@ enum MessageType {
 	// physics
 	SET_VELOCITY,		// <glm::vec3*> 	sets the velocity.
 	SET_MASS,			// <float*>			sets the mass.
+	// chunk:
+	CAST_RAY,			// <RayInfo*>		casts a ray and modifies the terrain.
 };
 
 typedef void(*MessageHandler)(SystemData&, Handle, uint32_t, void*);

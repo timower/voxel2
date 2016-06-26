@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
-	glfwSwapInterval(0); // TODO: config
+	glfwSwapInterval(1); // TODO: config
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_DEPTH_TEST);
