@@ -358,7 +358,7 @@ static void castRay(ChunkData& chunkData, const RayInfo& rayInfo) {
 		if (getBlock(chunkData, glm::ivec3(X, Y, Z)) != 0) {
 			if (!rayInfo.add)
 				setBlock(chunkData, glm::ivec3(X, Y, Z), rayInfo.val);
-			else
+			else if (k != 0)
 				setBlock(chunkData, glm::ivec3(lastX, lastY, lastZ), rayInfo.val);
 			break;
 		}

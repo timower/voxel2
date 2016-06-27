@@ -18,7 +18,7 @@ void initSystemData(GameData& data) {
 }
 
 void updateSystemData(GameData& data, UpdateInfo& update) {
-	updateInputSystem(data);
+	updateInputSystem(data, update);
 
 	updateChunkSystem(data.systemData);
 

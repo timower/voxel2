@@ -1,9 +1,20 @@
-- Fix input.
+
 - Frustum culling.
 
 - Fix messaging and init.
 
-- Remove component from entity.
+- Prevent building block that collides.
+
 - Chunk without being rendered.
 
+- UI.
+
+- File storage.
+
+- Remove component from entity.
+
 - sub entities via entity component zero in entity or remove component zero?
+
+- Terrain generation.
+
+- Scripting language? (lisp, ...)

@@ -22,7 +22,7 @@ void setControlEntity(SystemData& systemData, Handle controlEntity) {
 	addComponent(systemData.entityData, controlEntity, {0, SystemTypes::INPUT, 0});
 }
 
-void updateInputSystem(GameData& gameData) {
+void updateInputSystem(GameData& gameData, UpdateInfo& update) {
 	GLFWwindow* window = gameData.window;
 	InputData& inputData = gameData.systemData.inputData;
 
@@ -70,23 +70,27 @@ void updateInputSystem(GameData& gameData) {
 		sendEntitySysMsg(gameData.systemData, inputData.controlEntity, PHYSICS, JUMP, &jump_vel);
 	}
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && inputData.leftClickTimer <= 0.0f) {
 		RayInfo rayInfo;
 		rayInfo.origin = controlTrans.position;
 		rayInfo.direction = transformRotation(controlTrans) * FRONT;
 		rayInfo.add = false;
 		rayInfo.val = 0;
 		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
+		inputData.leftClickTimer = CLICK_TIME;
 	}
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && inputData.rightClickTimer <= 0.0f) {
 		RayInfo rayInfo;
 		rayInfo.origin = controlTrans.position;
 		rayInfo.direction = transformRotation(controlTrans) * FRONT;
 		rayInfo.add = true;
 		rayInfo.val = 3;
 		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
+		inputData.rightClickTimer = CLICK_TIME;
 	}
+	inputData.rightClickTimer -= update.dt;
+	inputData.leftClickTimer -= update.dt;
 }
 
 void sendInputMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
