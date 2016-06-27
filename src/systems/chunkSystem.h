@@ -75,6 +75,11 @@ struct RayInfo {
 	uint8_t val;
 };
 
+struct BlockInfo {
+	glm::ivec3 position;
+	uint8_t type;
+};
+
 inline glm::ivec3 worldToChunk(glm::ivec3 world) {
 	int tmp_x = world.x < 0;
     int tmp_y = world.y < 0;

@@ -392,5 +392,9 @@ void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, vo
 			RayInfo* rayInfo = static_cast<RayInfo*>(arg);
 			castRay(systemData.chunkData, *rayInfo);
 		} break;
+		case GET_BLOCK: {
+			BlockInfo* blockInfo = static_cast<BlockInfo*>(arg);
+			blockInfo->type = getBlock(systemData.chunkData, blockInfo->position);
+		} break;
 	}
 }

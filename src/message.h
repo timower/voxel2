@@ -17,9 +17,13 @@ enum MessageType {
 	GET_TRANSFORM,		// <Transform*>		gets the entity's transform.
 	// physics
 	SET_VELOCITY,		// <glm::vec3*> 	sets the velocity.
+	ADD_FORCE,			// <glm::vec3*>		adds a constant velocitity.
+	JUMP,				// <float*>			jumps if on ground.
 	SET_MASS,			// <float*>			sets the mass.
+	SET_AABB,			// <AABB*>			sets the AABB.
 	// chunk:
 	CAST_RAY,			// <RayInfo*>		casts a ray and modifies the terrain.
+	GET_BLOCK,			// <BlockInfo*>		gets the block at the given position.
 };
 
 typedef void(*MessageHandler)(SystemData&, Handle, uint32_t, void*);

@@ -16,15 +16,19 @@ void loadScene(GameData& gameData) {
 	addCameraComponent(systemData, camHandle);
 	addTransformComponent(systemData, camHandle);
 	addPhysComponent(systemData, camHandle);
-	float mass = 0.0f;
-	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_MASS, &mass);
 	setControlEntity(gameData.systemData, camHandle);
 
 	Transform camTrans;
-	camTrans.position = glm::vec3(2.0f, 5.0f, 2.0f);
+	camTrans.position = glm::vec3(2.0f, 6.0f, 2.0f);
 	camTrans.yaw = camTrans.roll = camTrans.pitch = 0;
 	camTrans.scale = glm::vec3(1.0f);
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
+	AABB camAABB;
+	camAABB.lowerCorner = glm::vec3(-0.4f, -1.6f, -0.4f);
+	camAABB.higherCorner = glm::vec3(0.4f, 0.2f, 0.4f);
+	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_AABB, &camAABB);
+	float mass = 1.0f;
+	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_MASS, &mass);
 
 	Handle cube = createCube(systemData);
 	//addPhysComponent(systemData, cube); // TODO: fix collision!

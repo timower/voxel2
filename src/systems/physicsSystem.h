@@ -12,13 +12,21 @@ struct SystemData;
 
 #define MAX_PHYS_COMP 128
 
+struct AABB {
+	glm::vec3 lowerCorner;
+	glm::vec3 higherCorner;
+};
+
 struct PhysicsComponent {
 	Handle handle;
 	Handle entity;
 
 	glm::vec3 velocity;
+	AABB aabb;
+
 	glm::vec3 physVel;
 	float mass;
+
 };
 
 struct PhysicsData {
