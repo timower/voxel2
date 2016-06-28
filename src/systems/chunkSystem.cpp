@@ -120,6 +120,8 @@ void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos) {
 	drawComp.TEX = systemData.chunkData.texture;
 	drawComp.program = systemData.chunkData.program;
 
+	drawComp.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+
 	// send setPosition msg.
 	Transform trans;
 	trans.scale = glm::vec3(1, 1, 1);

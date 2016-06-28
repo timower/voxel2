@@ -136,6 +136,8 @@ Handle createCube(SystemData& systemData) {
 
 	drawComp.program = loadShaderFile("assets/cube.vert", "assets/cube.frag");
 
+	drawComp.size = glm::vec3(1.0f, 1.0f, 1.0f);
+
 	sendMessage(systemData, entity, SET_TRANSFORM, &ZERO);
 	return entity;
 }

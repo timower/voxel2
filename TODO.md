@@ -1,5 +1,4 @@
-
-- Frustum culling.
+- Destroy VAO & VBO & stuff.
 
 - Fix messaging and init.
 

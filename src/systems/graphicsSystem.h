@@ -17,6 +17,8 @@ struct GraphicsComponent {
 	Handle entity;
 
 	glm::mat4 modelMat;
+	glm::vec3 pos;
+	glm::vec3 size;
 
 	GLuint VAO;
 	GLuint TEX;
