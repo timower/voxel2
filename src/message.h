@@ -8,9 +8,9 @@
 enum MessageType {
 	// entity:
 	DESTROY = 1,
+	INIT,
 	// graphics
 	SET_GRAPH_TRANS,	// <Transform*> 	sets the graphics matrix,
-	GET_VBO,			// <GLuint*>		gets the vbo of the drawable.
 	SET_NVERTICES,		// <size_t*>		sets the amount of vertices.
 	SET_BOUNDING_SIZE, 	// <glm::vec3*>		sets the size of the bounding box for frustum cullin.
 	// transform

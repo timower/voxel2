@@ -4,15 +4,15 @@
 #include "../platform.h"
 #include "../message.h"
 
+static GraphicsComponent& getGraphicsComponent(GraphicsData& graphicsData, Handle component) {
+	return graphicsData.drawables.get(component);
+}
+
 Handle addDrawComponent(SystemData& systemData, Handle entityHndl) {
 	Handle ret = systemData.graphicsData.drawables.add();
 	getGraphicsComponent(systemData.graphicsData, ret).entity = entityHndl;
 	addComponent(systemData.entityData, entityHndl, ret);
 	return ret;
-}
-
-GraphicsComponent& getGraphicsComponent(GraphicsData& graphicsData, Handle component) {
-	return graphicsData.drawables.get(component);
 }
 
 Handle addCameraComponent(SystemData& systemData, Handle entityHndl) {
@@ -194,10 +194,6 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 				comp.pos = transform->position;
 			}
 		} break;
-		case GET_VBO: {
-			GLuint* VBO = static_cast<GLuint*>(arg);
-			*VBO = getGraphicsComponent(systemData.graphicsData, receiver).VBO;
-		} break;
 		case SET_NVERTICES: {
 			size_t* nverts = static_cast<size_t*>(arg);
 			getGraphicsComponent(systemData.graphicsData, receiver).nVertices = *nverts;
@@ -205,6 +201,15 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 		case SET_BOUNDING_SIZE: {
 			glm::vec3* size = static_cast<glm::vec3*>(arg);
 			getGraphicsComponent(systemData.graphicsData, receiver).size = *size;
+		} break;
+		case INIT: {
+			GraphicsInit* init = static_cast<GraphicsInit*>(arg);
+			GraphicsComponent& comp = getGraphicsComponent(systemData.graphicsData, receiver);
+			comp.VAO = init->VAO;
+			comp.TEX = init->TEX;
+			comp.program = init->program;
+			comp.nVertices = init->nVertices;
+			comp.size = init->size;
 		} break;
 		case DESTROY: {
 			systemData.graphicsData.drawables.remove(receiver);

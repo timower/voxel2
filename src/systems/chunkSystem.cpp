@@ -98,29 +98,30 @@ void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos) {
 	// add graphics
 	Handle drawable = addDrawComponent(systemData, entity);
 	// set graphics VBO & IBO & TBO ...
-	GraphicsComponent& drawComp = getGraphicsComponent(systemData.graphicsData, drawable);
-	drawComp.IBO = systemData.chunkData.IBO; // is still unused.
+	//GraphicsComponent& drawComp = getGraphicsComponent(systemData.graphicsData, drawable);
+	GraphicsInit graphicsInit;
 
-	glGenVertexArrays(1, &drawComp.VAO);
-	glBindVertexArray(drawComp.VAO);
+	glGenVertexArrays(1, &graphicsInit.VAO);
+	chunk.VAO = graphicsInit.VAO;
+	glBindVertexArray(graphicsInit.VAO);
 
-	glGenBuffers(1, &drawComp.VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, drawComp.VBO);
+	glGenBuffers(1, &chunk.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, chunk.VBO);
 
 	glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawComp.IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, systemData.chunkData.IBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-	drawComp.nVertices = 0;
 
-	drawComp.TEX = systemData.chunkData.texture;
-	drawComp.program = systemData.chunkData.program;
-
-	drawComp.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+	graphicsInit.nVertices = 0;
+	graphicsInit.TEX = systemData.chunkData.texture;
+	graphicsInit.program = systemData.chunkData.program;
+	graphicsInit.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+	sendMessage(systemData, drawable, INIT, &graphicsInit);
 
 	// send setPosition msg.
 	Transform trans;
@@ -261,8 +262,7 @@ static void rebuildChunk(SystemData& systemData, const Chunk& chunk) {
 	}
 
 	// get graphics component
-	GLuint VBO;
-	sendEntitySysMsg(systemData, chunk.entity, SystemTypes::GRAPHICS, GET_VBO, &VBO);
+	GLuint VBO = chunk.VBO;
 	// set buffer data:
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, chunkData.vertexIdx * sizeof(GLuint), chunkData.vertexBuffer, GL_STATIC_DRAW);
@@ -380,6 +380,8 @@ static void destroyChunkComponent(ChunkData& chunkData, Handle chunkComp) {
 			neighChunk.neighbours[5 - i].type = INVALID;
 		}
 	}
+	glDeleteBuffers(1, &chunk.VBO);
+	glDeleteVertexArrays(1, &chunk.VAO);
 	chunkData.chunkMap.erase(chunk.pos);
 	chunkData.chunks.remove(chunkComp);
 	// TODO: save to disk..

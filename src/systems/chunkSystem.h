@@ -22,6 +22,9 @@ struct Chunk {
 	Handle handle;
 	Handle entity;
 
+	GLuint VBO;
+	GLuint VAO;
+
 	glm::ivec3 pos;
 
 	uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];

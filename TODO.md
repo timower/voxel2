@@ -1,7 +1,3 @@
-- Destroy VAO & VBO & stuff.
-
-- Fix messaging and init.
-
 - Prevent building block that collides.
 
 - Chunk without being rendered.

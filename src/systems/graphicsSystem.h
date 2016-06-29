@@ -12,6 +12,15 @@ struct SystemData;
 
 #define MAX_DRAWABLES 128
 
+struct GraphicsInit {
+	GLuint VAO;
+	GLuint TEX;
+	GLint program;
+	
+	size_t nVertices;
+	glm::vec3 size;
+};
+
 struct GraphicsComponent {
 	Handle handle;
 	Handle entity;
@@ -25,9 +34,6 @@ struct GraphicsComponent {
 	GLint program;
 
 	size_t nVertices;
-	// NOTE: graphics doesn't need these to draw.
-	GLuint VBO;
-	GLuint IBO;
 };
 
 struct GraphicsData {
@@ -41,7 +47,7 @@ struct GraphicsData {
 
 
 Handle addDrawComponent(SystemData& systemData, Handle entityHndl);
-GraphicsComponent& getGraphicsComponent(GraphicsData& graphicsData, Handle component);
+//GraphicsComponent& getGraphicsComponent(GraphicsData& graphicsData, Handle component);
 
 Handle addCameraComponent(SystemData& systemData, Handle entityHndl);
 
