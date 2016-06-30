@@ -18,7 +18,7 @@ struct SystemData {
 	TransformData transformData;
 
 	GraphicsData graphicsData;
-	
+
 	PhysicsData physicsData;
 
 	InputData inputData;
@@ -26,7 +26,7 @@ struct SystemData {
 	ChunkData chunkData;
 };
 
-void initSystemData(GameData& data);
+void initSystemData(GameData& data, Config& config);
 void updateSystemData(GameData& data, UpdateInfo& update);
 
 #endif

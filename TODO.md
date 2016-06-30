@@ -1,5 +1,3 @@
-- Config.
-
 - Chunk without being rendered.
 
 - File storage.

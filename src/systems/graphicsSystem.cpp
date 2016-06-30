@@ -21,10 +21,10 @@ Handle addCameraComponent(SystemData& systemData, Handle entityHndl) {
 	return ret;
 }
 
-void initGraphicsSystem(GraphicsData& graphicsData) {
+void initGraphicsSystem(GraphicsData& graphicsData, Config& config) {
 	graphicsData.projectionMatrix = glm::perspective(
-		glm::radians(80.0f),
-		(float) WIDTH / (float)HEIGHT,
+		glm::radians(config.fov),
+		(float)config.width / (float)config.height,
 		0.01f,
 		100.0f
 	);

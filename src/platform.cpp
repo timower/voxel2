@@ -18,19 +18,30 @@ void stop() {
 }
 
 static void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+	// TODO: notify graphics system -> recreate projection matrix.
 	glViewport(0, 0, width, height);
 	std::cout << "frambuffer set" << std::endl;
 }
 
+void loadConfig(Config& config) {
+	config.width = 1280;
+	config.height = 720;
+	config.vsync = 1;
+	config.fov = 80.0f;
+}
+
 int main(int argc, char* argv[]) {
 	// init window:
+	Config config;
+	loadConfig(config);
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "test", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(config.width, config.height, "TODO", nullptr, nullptr);
 	if (!window) {
 		std::cout << "Error creating window" << std::endl;
 		glfwTerminate();
@@ -48,7 +59,7 @@ int main(int argc, char* argv[]) {
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
-	glfwSwapInterval(1); // TODO: config
+	glfwSwapInterval(config.vsync);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_DEPTH_TEST);
@@ -74,7 +85,7 @@ int main(int argc, char* argv[]) {
 	gameData->window = window;
 	gameData->memorySize = allocatedMemory - sizeof(GameData);
 	glfwSetWindowUserPointer(window, gameData);
-	initGame(*gameData);
+	initGame(*gameData, config);
 
 	// gameLoop:
 	float lastTime = glfwGetTime();

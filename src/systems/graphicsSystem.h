@@ -8,6 +8,7 @@
 #include "entitySystem.h"
 #include "../transform.h"
 #include "physicsSystem.h"
+#include "../platform.h"
 
 struct SystemData;
 
@@ -52,7 +53,7 @@ Handle addDrawComponent(SystemData& systemData, Handle entityHndl);
 
 Handle addCameraComponent(SystemData& systemData, Handle entityHndl);
 
-void initGraphicsSystem(GraphicsData& graphicsData);
+void initGraphicsSystem(GraphicsData& graphicsData, Config& config);
 
 void updateGraphicsSystem(GraphicsData& graphicsData);
 

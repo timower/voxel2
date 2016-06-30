@@ -19,7 +19,7 @@ struct UpdateInfo {
 	size_t frame;
 };
 
-void initGame(GameData& gameData);
+void initGame(GameData& gameData, Config& config);
 void updateGame(GameData& gameData, UpdateInfo& updateInfo);
 
 #endif

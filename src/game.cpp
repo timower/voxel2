@@ -56,8 +56,8 @@ void loadScene(GameData& gameData) {
 	setPlayerHandle(systemData.chunkData, camHandle);
 }
 
-void initGame(GameData& data) {
-	initSystemData(data);
+void initGame(GameData& data, Config& config) {
+	initSystemData(data, config);
 	loadScene(data);
 }
 

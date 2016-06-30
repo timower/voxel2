@@ -3,12 +3,12 @@
 #include "../game.h"
 
 
-void initSystemData(GameData& data) {
+void initSystemData(GameData& data, Config& config) {
 	initEntitySystem(data.systemData.entityData);
 
 	initTransformSystem(data.systemData.transformData);
 
-	initGraphicsSystem(data.systemData.graphicsData);
+	initGraphicsSystem(data.systemData.graphicsData, config);
 
 	initInputSystem(data);
 
