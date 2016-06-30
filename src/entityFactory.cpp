@@ -134,7 +134,8 @@ Handle createCube(SystemData& systemData) {
 	graphicsInit.TEX = cubeTEX;
 	graphicsInit.program = cubeProg;
 	graphicsInit.nVertices = 36;
-	graphicsInit.size = glm::vec3(1.0f);
+	graphicsInit.aabb.position = glm::vec3(0);
+	graphicsInit.aabb.size = glm::vec3(1.0f);
 	sendMessage(systemData, drawHndl, INIT, &graphicsInit);
 
 	sendMessage(systemData, entity, SET_TRANSFORM, &ZERO);

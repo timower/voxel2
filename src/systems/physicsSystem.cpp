@@ -35,8 +35,8 @@ void updatePhysicsSystem(SystemData& systemData, float dt) {
 		for (int axis = 0; axis < 3; axis++) {
 			if (velocity[axis] == 0.0f)
 				continue;
-			glm::vec3 lowCorn = comp.aabb.lowerCorner;
-			glm::vec3 highCorn = comp.aabb.higherCorner;
+			glm::vec3 lowCorn = comp.aabb.position;
+			glm::vec3 highCorn = lowCorn + comp.aabb.size;
 
 			if (velocity[axis] > 0)
 				lowCorn[axis] = highCorn[axis];
@@ -57,7 +57,8 @@ void updatePhysicsSystem(SystemData& systemData, float dt) {
 			for (int z = lowerVox.z; z <= higherVox.z; z++) {
 				BlockInfo blockInfo;
 				blockInfo.position = glm::vec3(x, y, z);
-				sendChunkMessage(systemData, INVALID_HNDL, GET_BLOCK, &blockInfo);
+				//sendChunkMessage(systemData, INVALID_HNDL, GET_BLOCK, &blockInfo);
+				sendMessage(systemData, CHUNK, GET_BLOCK, &blockInfo);
 				if (blockInfo.type != 0) {
 					// TODO: better way?
 					velocity[axis] = 0;
@@ -72,6 +73,36 @@ loop_exit: // TODO: fix goto.
 		sendEntitySysMsg(systemData, comp.entity, SystemTypes::TRANSFORM, SET_TRANSFORM, &transform);
 	}
 }
+
+static bool collideAABB(glm::vec3& pos1, AABB& aabb1, glm::vec3& pos2, AABB& aabb2) {
+	glm::vec3 min1 = pos1 + aabb1.position;
+	glm::vec3 max1 = min1 + aabb1.size;
+	glm::vec3 min2 = pos2 + aabb2.position;
+	glm::vec3 max2 = min2 + aabb2.size;
+	return  (min1.x <= max2.x && max1.x >= min2.x) &&
+			(min1.y <= max2.y && max1.y >= min2.y) &&
+			(min1.z <= max2.z && max1.z >= min2.z);
+}
+
+static bool checkBlockCollision(SystemData& systemData, glm::ivec3& block) {
+	// construct bounding box
+	glm::vec3 pos = block;
+	AABB aabb;
+	aabb.position = glm::vec3(0);
+	aabb.size = glm::vec3(1.0f);
+	// for each component:
+	size_t n = systemData.physicsData.components.size;
+	for (size_t i = 0; i < n; i++) {
+		PhysicsComponent& comp = systemData.physicsData.components.data[i];
+		Transform trans;
+		sendEntitySysMsg(systemData, comp.entity, TRANSFORM, GET_TRANSFORM, &trans);
+		if (collideAABB(pos, aabb, trans.position, comp.aabb))
+			return true;
+	}
+	return false;
+}
+
+
 
 void sendPhysicsMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
 	switch (type) {
@@ -97,6 +128,10 @@ void sendPhysicsMessage(SystemData& systemData, Handle receiver, uint32_t type, 
 		case SET_AABB: {
 			AABB* aabb = static_cast<AABB*>(arg);
 			getPhysComponent(systemData.physicsData, receiver).aabb = *aabb;
+		} break;
+		case TEST_COL: {
+			ColInfo* colInfo = static_cast<ColInfo*>(arg);
+			colInfo->collision = checkBlockCollision(systemData, colInfo->block);
 		} break;
 		case DESTROY:  {
 			systemData.physicsData.components.remove(receiver);

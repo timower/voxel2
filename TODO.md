@@ -1,10 +1,12 @@
-- Prevent building block that collides.
+- Config.
 
 - Chunk without being rendered.
 
-- UI.
-
 - File storage.
+
+- Use init message more.
+
+- UI.
 
 - Remove component from entity.
 

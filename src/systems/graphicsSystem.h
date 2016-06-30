@@ -7,6 +7,7 @@
 
 #include "entitySystem.h"
 #include "../transform.h"
+#include "physicsSystem.h"
 
 struct SystemData;
 
@@ -16,9 +17,9 @@ struct GraphicsInit {
 	GLuint VAO;
 	GLuint TEX;
 	GLint program;
-	
+
 	size_t nVertices;
-	glm::vec3 size;
+	AABB aabb;
 };
 
 struct GraphicsComponent {
@@ -27,7 +28,7 @@ struct GraphicsComponent {
 
 	glm::mat4 modelMat;
 	glm::vec3 pos;
-	glm::vec3 size;
+	AABB aabb;
 
 	GLuint VAO;
 	GLuint TEX;

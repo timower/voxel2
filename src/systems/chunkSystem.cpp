@@ -120,7 +120,8 @@ void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos) {
 	graphicsInit.nVertices = 0;
 	graphicsInit.TEX = systemData.chunkData.texture;
 	graphicsInit.program = systemData.chunkData.program;
-	graphicsInit.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+	graphicsInit.aabb.position = glm::vec3(0);
+	graphicsInit.aabb.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
 	sendMessage(systemData, drawable, INIT, &graphicsInit);
 
 	// send setPosition msg.
@@ -318,7 +319,7 @@ void setPlayerHandle(ChunkData& chunkData, Handle player) {
 }
 
 // TODO: optimize to use chunk neighbours -> one hash lookup!
-static void castRay(ChunkData& chunkData, const RayInfo& rayInfo) {
+static void castRay(ChunkData& chunkData, RayInfo& rayInfo) {
 	int X = static_cast<int>(floor(rayInfo.origin.x));
 	int Y = static_cast<int>(floor(rayInfo.origin.y));
 	int Z = static_cast<int>(floor(rayInfo.origin.z));
@@ -358,10 +359,10 @@ static void castRay(ChunkData& chunkData, const RayInfo& rayInfo) {
 			}
 		}
 		if (getBlock(chunkData, glm::ivec3(X, Y, Z)) != 0) {
-			if (!rayInfo.add)
-				setBlock(chunkData, glm::ivec3(X, Y, Z), rayInfo.val);
+			if (!rayInfo.adjacent)
+				rayInfo.result = glm::ivec3(X, Y, Z);//setBlock(chunkData, glm::ivec3(X, Y, Z), rayInfo.val);
 			else if (k != 0)
-				setBlock(chunkData, glm::ivec3(lastX, lastY, lastZ), rayInfo.val);
+				rayInfo.result = glm::ivec3(lastX, lastY, lastZ);//setBlock(chunkData, glm::ivec3(lastX, lastY, lastZ), rayInfo.val);
 			break;
 		}
 		lastX = X;
@@ -399,6 +400,10 @@ void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, vo
 		case GET_BLOCK: {
 			BlockInfo* blockInfo = static_cast<BlockInfo*>(arg);
 			blockInfo->type = getBlock(systemData.chunkData, blockInfo->position);
+		} break;
+		case SET_BLOCK: {
+			BlockInfo* blockInfo = static_cast<BlockInfo*>(arg);
+			setBlock(systemData.chunkData, blockInfo->position, blockInfo->type);
 		} break;
 	}
 }

@@ -156,7 +156,7 @@ void updateGraphicsSystem(GraphicsData& gData) {
 	size_t nDrawables = gData.drawables.size;
 	for (size_t i = 0; i < nDrawables; ++i) {
 		const GraphicsComponent& drawable = gData.drawables.data[i];
-		if (!inFrustum(frustum, drawable.pos, drawable.size))
+		if (!inFrustum(frustum, drawable.pos + drawable.aabb.position, drawable.aabb.size))
 			continue;
 
 		if (currentProgram != drawable.program) {
@@ -198,9 +198,9 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 			size_t* nverts = static_cast<size_t*>(arg);
 			getGraphicsComponent(systemData.graphicsData, receiver).nVertices = *nverts;
 		} break;
-		case SET_BOUNDING_SIZE: {
-			glm::vec3* size = static_cast<glm::vec3*>(arg);
-			getGraphicsComponent(systemData.graphicsData, receiver).size = *size;
+		case SET_AABB: {
+			AABB* aabb = static_cast<AABB*>(arg);
+			getGraphicsComponent(systemData.graphicsData, receiver).aabb = *aabb;
 		} break;
 		case INIT: {
 			GraphicsInit* init = static_cast<GraphicsInit*>(arg);
@@ -209,7 +209,7 @@ void sendGraphicsMessage(SystemData& systemData, Handle receiver, uint32_t type,
 			comp.TEX = init->TEX;
 			comp.program = init->program;
 			comp.nVertices = init->nVertices;
-			comp.size = init->size;
+			comp.aabb = init->aabb;
 		} break;
 		case DESTROY: {
 			systemData.graphicsData.drawables.remove(receiver);

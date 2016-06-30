@@ -24,18 +24,23 @@ void loadScene(GameData& gameData) {
 	camTrans.scale = glm::vec3(1.0f);
 	sendMessage(systemData, camHandle, SET_TRANSFORM, &camTrans);
 	AABB camAABB;
-	camAABB.lowerCorner = glm::vec3(-0.4f, -1.6f, -0.4f);
-	camAABB.higherCorner = glm::vec3(0.4f, 0.2f, 0.4f);
+	camAABB.position = glm::vec3(-0.4f, -1.6f, -0.4f);
+	camAABB.size = glm::vec3(0.8f, 1.8f, 0.8f);
 	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_AABB, &camAABB);
-	float mass = 1.0f;
+	float mass = 2.0f;
 	sendEntitySysMsg(systemData, camHandle, SystemTypes::PHYSICS, SET_MASS, &mass);
 
 	Handle cube = createCube(systemData);
-	//addPhysComponent(systemData, cube); // TODO: fix collision!
+	addPhysComponent(systemData, cube);
+	mass = 1.0f;
+	sendEntitySysMsg(systemData, cube, SystemTypes::PHYSICS, SET_MASS, &mass);
+	camAABB.position = glm::vec3(0.05f);
+	camAABB.size = glm::vec3(0.9f);
+	sendEntitySysMsg(systemData, cube, SystemTypes::PHYSICS, SET_AABB, &camAABB);
 	Transform trans;
 	trans.scale = glm::vec3(1.0f);
 	trans.yaw = trans.roll = trans.pitch = 0;
-	trans.position = glm::vec3(0.0f, 3.0f, 0.0f);
+	trans.position = glm::vec3(0.0f, 10.0f, 0.0f);
 	sendMessage(systemData, cube, SET_TRANSFORM, &trans);
 
 

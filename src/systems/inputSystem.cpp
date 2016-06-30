@@ -6,7 +6,7 @@
 #include <glm/gtx/euler_angles.hpp>
 
 #define SPEED 5.0f
-#define JUMP_SPEED 5.0f
+#define JUMP_SPEED 7.0f
 
 void initInputSystem(GameData& gameData) {
 	SystemData& systemData = gameData.systemData;
@@ -74,9 +74,12 @@ void updateInputSystem(GameData& gameData, UpdateInfo& update) {
 		RayInfo rayInfo;
 		rayInfo.origin = controlTrans.position;
 		rayInfo.direction = transformRotation(controlTrans) * FRONT;
-		rayInfo.add = false;
-		rayInfo.val = 0;
-		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
+		rayInfo.adjacent = false;
+		sendMessage(gameData.systemData, SystemTypes::CHUNK, CAST_RAY, &rayInfo);
+		BlockInfo blockInfo;
+		blockInfo.position = rayInfo.result;
+		blockInfo.type = 0;
+		sendMessage(gameData.systemData, SystemTypes::CHUNK, SET_BLOCK, &blockInfo);
 		inputData.leftClickTimer = CLICK_TIME;
 	}
 
@@ -84,10 +87,20 @@ void updateInputSystem(GameData& gameData, UpdateInfo& update) {
 		RayInfo rayInfo;
 		rayInfo.origin = controlTrans.position;
 		rayInfo.direction = transformRotation(controlTrans) * FRONT;
-		rayInfo.add = true;
-		rayInfo.val = 3;
-		sendChunkMessage(gameData.systemData, {0, INVALID, 0}, CAST_RAY, &rayInfo);
-		inputData.rightClickTimer = CLICK_TIME;
+		rayInfo.adjacent = true;
+		sendMessage(gameData.systemData, SystemTypes::CHUNK, CAST_RAY, &rayInfo);
+
+		// check collision:
+		ColInfo colInfo;
+		colInfo.block = rayInfo.result;
+		sendMessage(gameData.systemData, SystemTypes::PHYSICS, TEST_COL, &colInfo);
+		if (!colInfo.collision) {
+			BlockInfo blockInfo;
+			blockInfo.position = rayInfo.result;
+			blockInfo.type = 4;
+			sendMessage(gameData.systemData, SystemTypes::CHUNK, SET_BLOCK, &blockInfo);
+			inputData.rightClickTimer = CLICK_TIME;
+		}
 	}
 	inputData.rightClickTimer -= update.dt;
 	inputData.leftClickTimer -= update.dt;

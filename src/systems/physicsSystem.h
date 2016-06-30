@@ -13,8 +13,13 @@ struct SystemData;
 #define MAX_PHYS_COMP 128
 
 struct AABB {
-	glm::vec3 lowerCorner;
-	glm::vec3 higherCorner;
+	glm::vec3 position;
+	glm::vec3 size;
+};
+
+struct ColInfo {
+	glm::ivec3 block;
+	bool collision;
 };
 
 struct PhysicsComponent {

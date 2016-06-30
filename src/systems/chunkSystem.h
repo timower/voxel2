@@ -74,8 +74,8 @@ void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, vo
 struct RayInfo {
 	glm::vec3 origin;
 	glm::vec3 direction;
-	bool add;
-	uint8_t val;
+	bool adjacent;
+	glm::ivec3 result;
 };
 
 struct BlockInfo {
