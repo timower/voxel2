@@ -2,6 +2,7 @@
 
 #include "../message.h"
 #include "../resources.h"
+#include "../game.h"
 
 #include "systemData.h"
 
@@ -11,12 +12,115 @@ static Chunk& getChunkComponent(ChunkData& chunkData, Handle component) {
 	return chunkData.chunks.get(component);
 }
 
+static Handle addChunkComponent(SystemData& systemData, Handle entityHndl) {
+	Handle ret = systemData.chunkData.chunks.add();
+	getChunkComponent(systemData.chunkData, ret).entity = entityHndl;
+	addComponent(systemData.entityData, entityHndl, ret);
+	return ret;
+}
+
 static Handle getChunk(ChunkData& chunkData, glm::ivec3 pos) {
 	if (chunkData.chunkMap.count(pos) == 0)
 		return {0, SystemTypes::INVALID, 0};
 	else
 		return chunkData.chunkMap.at(pos);
 }
+
+void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos) {
+	// create entity:
+	Handle entity = createEntity(systemData.entityData);
+	addTransformComponent(systemData, entity);
+
+	// add chunk comp:
+	Handle chunkHndl = addChunkComponent(systemData, entity);
+	// set terrain:
+	Chunk& chunk = getChunkComponent(systemData.chunkData, chunkHndl);
+	chunk.pos = chunkPos;
+	for (uint16_t x = 0; x < CHUNK_SIZE; x++)
+	for (uint16_t y = 0; y < CHUNK_SIZE; y++)
+	for (uint16_t z = 0; z < CHUNK_SIZE; z++) {
+			if (CHUNK_SIZE * chunkPos.y + y < 3.0f) {
+				if (x == 0 || x == CHUNK_SIZE -1 || z == 0 || z == CHUNK_SIZE - 1)
+					chunk.blocks[x][y][z] = 1;
+				else
+					chunk.blocks[x][y][z] = 2;
+			} else {
+				chunk.blocks[x][y][z] = 0;
+			}
+	}
+	chunk.dirty = true;
+	chunk.active = false;
+	// fill neighbours:
+	for (int i = 0; i < 6; i++) {
+		Handle neighbour = getChunk(systemData.chunkData, chunkPos + normals[i]);
+		chunk.neighbours[i] = neighbour;
+		if (neighbour.type != INVALID) {
+			Chunk& neighChunk = getChunkComponent(systemData.chunkData, neighbour);
+			neighChunk.neighbours[5 - i] = chunkHndl;
+			neighChunk.dirty = true;
+		}
+	}
+
+	// send setPosition msg.
+	Transform trans;
+	trans.scale = glm::vec3(1, 1, 1);
+	trans.pitch = trans.roll = trans.yaw = 0;
+	trans.position = glm::vec3(chunkPos * CHUNK_SIZE);
+	sendEntitySysMsg(systemData, entity, TRANSFORM, SET_TRANSFORM, &trans);
+
+	systemData.chunkData.chunkMap[chunkPos] = chunkHndl;
+}
+
+static void activateChunk(SystemData& systemData, Chunk& chunk) {
+	assert(!chunk.active);
+	chunk.active = true;
+	chunk.dirty = true;
+	// add graphics
+	Handle drawable = addDrawComponent(systemData, chunk.entity);
+	// set graphics VBO & IBO & TBO ...
+	GraphicsInit graphicsInit;
+
+	glGenVertexArrays(1, &graphicsInit.VAO);
+	chunk.VAO = graphicsInit.VAO;
+	glBindVertexArray(graphicsInit.VAO);
+
+	glGenBuffers(1, &chunk.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, chunk.VBO);
+
+	glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, systemData.chunkData.IBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
+	graphicsInit.nVertices = 0;
+	graphicsInit.TEX = systemData.chunkData.texture;
+	graphicsInit.program = systemData.chunkData.program;
+	graphicsInit.aabb.position = glm::vec3(0);
+	graphicsInit.aabb.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+	sendMessage(systemData, drawable, INIT, &graphicsInit);
+
+	Transform trans;
+	trans.scale = glm::vec3(1, 1, 1);
+	trans.pitch = trans.roll = trans.yaw = 0;
+	trans.position = glm::vec3(chunk.pos * CHUNK_SIZE);
+	sendEntitySysMsg(systemData, chunk.entity, TRANSFORM, SET_TRANSFORM, &trans);
+}
+
+static void deactivivateChunk(SystemData& systemData, Chunk& chunk) {
+	assert(chunk.active);
+	chunk.active = false;
+	//chunk.lastActiveTime = glfwGetTime(); // TODO: use updateInfo.t?
+
+	sendEntitySysMsg(systemData, chunk.entity, GRAPHICS, DESTROY, nullptr);
+
+	glDeleteBuffers(1, &chunk.VBO);
+	glDeleteVertexArrays(1, &chunk.VAO);
+}
+
 
 static uint8_t getBlock(ChunkData& chunkData, glm::ivec3 pos) {
 	glm::ivec3 chunkPos = worldToChunk(pos);
@@ -54,85 +158,6 @@ static void setBlock(ChunkData& chunkData, glm::ivec3 pos, uint8_t val) {
 		getChunkComponent(chunkData, comp.neighbours[NFRONT]).dirty = true;
 }
 
-
-static Handle addChunkComponent(SystemData& systemData, Handle entityHndl) {
-	Handle ret = systemData.chunkData.chunks.add();
-	getChunkComponent(systemData.chunkData, ret).entity = entityHndl;
-	addComponent(systemData.entityData, entityHndl, ret);
-	return ret;
-}
-
-void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos) {
-	// create entity
-	Handle entity = createEntity(systemData.entityData);
-	addTransformComponent(systemData, entity);
-
-	// add chunk comp.
-	Handle chunkHndl = addChunkComponent(systemData, entity);
-	// set terrain to full?
-	Chunk& chunk = getChunkComponent(systemData.chunkData, chunkHndl);
-	chunk.pos = chunkPos;
-	for (uint16_t x = 0; x < CHUNK_SIZE; x++)
-	for (uint16_t y = 0; y < CHUNK_SIZE; y++)
-	for (uint16_t z = 0; z < CHUNK_SIZE; z++) {
-			if (CHUNK_SIZE * chunkPos.y + y < 3.0f) {
-				if (x == 0 || x == CHUNK_SIZE -1 || z == 0 || z == CHUNK_SIZE - 1)
-					chunk.blocks[x][y][z] = 1;
-				else
-					chunk.blocks[x][y][z] = 2;
-			} else {
-				chunk.blocks[x][y][z] = 0;
-			}
-	}
-	chunk.dirty = true;
-	// fill neighbours:
-	for (int i = 0; i < 6; i++) {
-		Handle neighbour = getChunk(systemData.chunkData, chunkPos + normals[i]);
-		chunk.neighbours[i] = neighbour;
-		if (neighbour.type != INVALID) {
-			Chunk& neighChunk = getChunkComponent(systemData.chunkData, neighbour);
-			neighChunk.neighbours[5 - i] = chunkHndl;
-			neighChunk.dirty = true;
-		}
-	}
-	// add graphics
-	Handle drawable = addDrawComponent(systemData, entity);
-	// set graphics VBO & IBO & TBO ...
-	//GraphicsComponent& drawComp = getGraphicsComponent(systemData.graphicsData, drawable);
-	GraphicsInit graphicsInit;
-
-	glGenVertexArrays(1, &graphicsInit.VAO);
-	chunk.VAO = graphicsInit.VAO;
-	glBindVertexArray(graphicsInit.VAO);
-
-	glGenBuffers(1, &chunk.VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, chunk.VBO);
-
-	glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, systemData.chunkData.IBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-
-	graphicsInit.nVertices = 0;
-	graphicsInit.TEX = systemData.chunkData.texture;
-	graphicsInit.program = systemData.chunkData.program;
-	graphicsInit.aabb.position = glm::vec3(0);
-	graphicsInit.aabb.size = glm::vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
-	sendMessage(systemData, drawable, INIT, &graphicsInit);
-
-	// send setPosition msg.
-	Transform trans;
-	trans.scale = glm::vec3(1, 1, 1);
-	trans.pitch = trans.roll = trans.yaw = 0;
-	trans.position = glm::vec3(chunkPos * CHUNK_SIZE);
-	sendMessage(systemData, entity, SET_TRANSFORM, &trans);
-
-	systemData.chunkData.chunkMap[chunkPos] = chunkHndl;
-}
 
 void initChunkSystem(ChunkData& chunkData) {
 	// create IBO.
@@ -203,6 +228,7 @@ static uint8_t getChunkBlock(ChunkData& chunkData, const Chunk& chunk, int8_t x,
 }
 
 static void rebuildChunk(SystemData& systemData, const Chunk& chunk) {
+	assert(chunk.dirty);
 	ChunkData& chunkData = systemData.chunkData;
 	chunkData.vertexIdx = 0;
 
@@ -273,7 +299,7 @@ static void rebuildChunk(SystemData& systemData, const Chunk& chunk) {
 	sendEntitySysMsg(systemData, chunk.entity, SystemTypes::GRAPHICS, SET_NVERTICES, &nElements);
 }
 
-void updateChunkSystem(SystemData& systemData) {
+void updateChunkSystem(SystemData& systemData, UpdateInfo& updateInfo) {
 	// load chunks:
 	Transform playerTrans;
 	sendEntitySysMsg(systemData, systemData.chunkData.player, SystemTypes::TRANSFORM, GET_TRANSFORM, &playerTrans);
@@ -299,11 +325,20 @@ void updateChunkSystem(SystemData& systemData) {
 				glm::abs(chunk.pos.y - playerChunk.y),
 				glm::abs(chunk.pos.z - playerChunk.z)));
 		if (playerDist > LOAD_DIST) {
-			// TODO: use async messages or something?
-			chunkData.chunksToRemove[chunkData.nChunksToRemove++] = chunk.entity;
-		} else if (chunk.dirty) {
-			rebuildChunk(systemData, chunk);
-			chunk.dirty = false;
+			if (chunk.active) {
+				deactivivateChunk(systemData, chunk);
+				chunk.lastActiveTime = updateInfo.t;
+			} else if (updateInfo.t - chunk.lastActiveTime > CHUNK_UNLOAD_TIME) {
+				chunkData.chunksToRemove[chunkData.nChunksToRemove++] = chunk.entity;
+			}
+		} else {
+			if (!chunk.active) {
+				activateChunk(systemData, chunk);
+			}
+			if (chunk.dirty) {
+				rebuildChunk(systemData, chunk);
+				chunk.dirty = false;
+			}
 		}
 	}
 
@@ -372,26 +407,25 @@ static void castRay(ChunkData& chunkData, RayInfo& rayInfo) {
 	}
 }
 
-static void destroyChunkComponent(ChunkData& chunkData, Handle chunkComp) {
-	Chunk& chunk = getChunkComponent(chunkData, chunkComp);
-	for (int i = 0; i < 6; i++) {
-		Handle neighbour = chunk.neighbours[i];
-		if (neighbour.type != INVALID) {
-			Chunk& neighChunk = getChunkComponent(chunkData, neighbour);
-			neighChunk.neighbours[5 - i].type = INVALID;
-		}
-	}
-	glDeleteBuffers(1, &chunk.VBO);
-	glDeleteVertexArrays(1, &chunk.VAO);
-	chunkData.chunkMap.erase(chunk.pos);
-	chunkData.chunks.remove(chunkComp);
-	// TODO: save to disk..
-}
-
 void sendChunkMessage(SystemData& systemData, Handle receiver, uint32_t type, void* arg) {
 	switch (type) {
 		case DESTROY: {
-			destroyChunkComponent(systemData.chunkData, receiver);
+			Chunk& chunk = getChunkComponent(systemData.chunkData, receiver);
+			assert(!chunk.active);
+			if (chunk.active) {
+				chunk.active = false;
+				glDeleteBuffers(1, &chunk.VBO);
+				glDeleteVertexArrays(1, &chunk.VAO);
+			}
+			for (int i = 0; i < 6; i++) {
+				Handle neighbour = chunk.neighbours[i];
+				if (neighbour.type != INVALID) {
+					Chunk& neighChunk = getChunkComponent(systemData.chunkData, neighbour);
+					neighChunk.neighbours[5 - i].type = INVALID;
+				}
+			}
+			systemData.chunkData.chunkMap.erase(chunk.pos);
+			systemData.chunkData.chunks.remove(receiver);
 		} break;
 		case CAST_RAY: {
 			RayInfo* rayInfo = static_cast<RayInfo*>(arg);

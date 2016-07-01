@@ -17,20 +17,24 @@
 #define N_INDICES  CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE*4*4 // TODO: make smaller
 
 #define LOAD_DIST 1
+#define CHUNK_UNLOAD_TIME 60
 
 struct Chunk {
 	Handle handle;
 	Handle entity;
 
-	GLuint VBO;
-	GLuint VAO;
-
 	glm::ivec3 pos;
 
-	uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-	bool dirty;
-
 	Handle neighbours[6];
+
+	uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+
+	bool dirty, active;
+	//float lastBuildTime;
+	float lastActiveTime;
+
+	GLuint VBO;
+	GLuint VAO;
 };
 
 struct VecHash {
@@ -61,11 +65,12 @@ struct ChunkData {
 };
 
 struct SystemData;
+struct UpdateInfo;
 
 void createChunkEntity(SystemData& systemData, glm::ivec3 chunkPos); // TODO: remove?
 
 void initChunkSystem(ChunkData& chunkData);
-void updateChunkSystem(SystemData& systemData);
+void updateChunkSystem(SystemData& systemData, UpdateInfo& updateInfo);
 
 void setPlayerHandle(ChunkData& chunkData, Handle player);
 

@@ -45,8 +45,10 @@ void sendEntityMessage(SystemData& systemData, Handle receiver, uint32_t type, v
 
 
 void sendEntitySysMsg(SystemData& systemData, Handle receiver, uint32_t system, uint32_t type, void* arg) {
-		Entity& entity = getEntity(systemData.entityData, receiver);
-		//assert(entity.components[system].type != SystemTypes::INVALID);
-		if (entity.components[system].type != SystemTypes::INVALID)
-			sendMessage(systemData,	entity.components[system], type, arg);
+	Entity& entity = getEntity(systemData.entityData, receiver);
+	//assert(entity.components[system].type != SystemTypes::INVALID);
+	if (entity.components[system].type != SystemTypes::INVALID)
+		sendMessage(systemData,	entity.components[system], type, arg);
+	if (type == DESTROY)
+		entity.components[system] = INVALID_HNDL;
 }

@@ -20,7 +20,7 @@ void initSystemData(GameData& data, Config& config) {
 void updateSystemData(GameData& data, UpdateInfo& update) {
 	updateInputSystem(data, update);
 
-	updateChunkSystem(data.systemData);
+	updateChunkSystem(data.systemData, update);
 
 	updatePhysicsSystem(data.systemData, update.dt);
 
