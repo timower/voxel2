@@ -6,10 +6,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <dlfcn.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <SOIL.h>
 
 void stop() {
@@ -96,9 +92,9 @@ int main(int argc, char* argv[]) {
 
 		float curTime = glfwGetTime();
 		UpdateInfo info = {
-			.dt = curTime - lastTime,
-			.t = curTime,
-			.frame = frame
+			curTime - lastTime,
+			curTime,
+			frame
 		};
 		lastTime = curTime;
 

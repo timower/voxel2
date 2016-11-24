@@ -70,6 +70,7 @@ void updateGame(GameData& data, UpdateInfo& update) {
 		size_t nframes = update.frame - lastFrame;
 		//printf("%f ms/frame\n", 1000.0f / (float)nframes);
 		sprintf(titleBuffer, "%f ms/frame", 1000.0f / (float)nframes);
+		//SPRINTF(titleBuffer, "%f ms/frame", 1000.0f / (float)nframes);
 		glfwSetWindowTitle(data.window, titleBuffer);
 		lastFrame = update.frame;
 		lastTime = update.t;

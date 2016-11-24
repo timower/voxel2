@@ -43,7 +43,7 @@ Handle Container<T, N, S>::add() {
 	}
 
 	this->handles[ret.index].index = idx;
-	this->data[idx] = {.handle = ret};
+	this->data[idx].handle = ret;
 	return ret;
 }
 

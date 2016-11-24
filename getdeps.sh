@@ -1,7 +1,8 @@
 #!/bin/sh
 
+rm -rf deps
+mkdir deps
 cd deps
-rm -rf *
 
 # download:
 
@@ -22,20 +23,6 @@ rm soil.zip
 
 git clone https://github.com/nigels-com/glew.git
 
-# build:
-# glfw:
-cd glfw
-cmake .
-make glfw
-cd ..
-# SOIL:
-cd SOIL/projects/makefile
-mkdir obj
-make
-cd ../../..
-#glew:
+
 cd glew/auto
 make
-cd ..
-make
-
