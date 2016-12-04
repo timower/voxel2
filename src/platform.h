@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
 #define KILOBYTES(x) (1024 * (x))

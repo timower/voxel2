@@ -13,6 +13,7 @@ mkdir obj
 make
 cd ../../..
 #glew:
-cd glew
+cd gl3w
+cmake .
 make
 

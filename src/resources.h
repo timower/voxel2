@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 
 uint8_t* readFile(const char* name, size_t* size);
 void writeFile(const char* name, const char* data, size_t size);

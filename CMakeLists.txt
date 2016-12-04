@@ -12,6 +12,9 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(deps/glfw)
 include_directories(deps/glfw/include)
 
+find_package(gl3w REQUIRED)
+include_directories(deps/gl3w/include)
+
 link_directories(deps/glew/lib)
 include_directories(deps/glew/include)
 
@@ -22,4 +25,4 @@ include_directories(deps/glm)
 
 set(EXECUTABLE_FILES src/unity.cpp )
 add_executable(main ${EXECUTABLE_FILES})
-target_link_libraries(main glfw GL libGLEW.a libSOIL.a)
+target_link_libraries(main gl3w glfw GL libSOIL.a)

@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_SYSTEM_H
 #define GRAPHICS_SYSTEM_H
 
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <glm/glm.hpp>
 #include <cstdarg>
 

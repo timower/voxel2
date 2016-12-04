@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <glm/glm.hpp>
 
 #include "../container.h"

@@ -21,8 +21,5 @@ unzip soil.zip
 mv 'Simple OpenGL Image Library'/ SOIL/
 rm soil.zip
 
-git clone https://github.com/nigels-com/glew.git
+git clone https://github.com/skaslev/gl3w.git
 
-
-cd glew/auto
-make

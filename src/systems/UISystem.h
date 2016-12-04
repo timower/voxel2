@@ -1,7 +1,7 @@
 #ifndef UI_SYSTEM_H
 #define UI_SYSTEM_H
 
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <glm/glm.hpp>
 #include "../container.h"
 

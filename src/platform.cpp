@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
 #include <SOIL.h>
@@ -44,8 +44,8 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glewExperimental = GL_TRUE;
-	if (glewInit() != GLEW_OK) {
+
+	if (gl3wInit()) {
 		std::cout << "error initing glew" << std::endl;
 		glfwTerminate();
 		return -1;
